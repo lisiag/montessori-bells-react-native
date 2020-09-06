@@ -5,25 +5,26 @@ import Draggable from 'react-native-draggable';
 import { Text, View, ScrollView, SafeAreaView } from '../components/Themed';
 
 const BELLSIZE = 140;
-
 /* Use the screen width to work out the placement of the bells. In the future, if this app is
 deployed not just for mobile devices but also for web, this will need to be modified so that on a
 larger device such as laptop, the bells placement doesn't use the entire width of the screen but
 only a portion in the centre */
 const screenWidth = Math.round(Dimensions.get('window').width);
+const LEFTBOUND = -16;
+const TOPBOUND = -10;
+const RIGHTBOUND = screenWidth - (BELLSIZE - 28);
 
 export default function Bells() {
     const notes = [3, 7, 2];
     const notesSorted = [2, 3, 7];
     const rowIndices = [0, 1, 2];
-
     const type = "match";
     const numPairs = 1;
 
     const renderDraggable = (rowIdx: number, x: number, y: number) => {
         if (numPairs !== 1 || rowIdx === 1) {
         return (<View key={rowIdx}>
-          <Draggable x={x} y={y} minX={0} minY={0}>
+          <Draggable x={x} y={y} minX={LEFTBOUND} minY={TOPBOUND} maxX={RIGHTBOUND}>
             <Icon
                 name='notifications'
                 color="limegreen"
@@ -46,7 +47,7 @@ export default function Bells() {
 
     const renderFixed = (rowIdx: number, x: number, y: number) => {
         return  (<View key={rowIdx}>
-          <Draggable x={x} y={y} minX={0} minY={0} disabled={true}>
+          <Draggable x={x} y={y}  minX={LEFTBOUND} minY={TOPBOUND} maxX={RIGHTBOUND} disabled={true}>
             <Icon
                 name='notifications'
                 color="dodgerblue"
