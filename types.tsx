@@ -5,7 +5,8 @@ export type RootStackParamList = {
 
 export type BottomTabParamList = {
   Home: undefined;
-  About: undefined;
+    About: undefined;
+    Match: undefined;
 };
 
 export type HomeParamList = {
@@ -14,4 +15,8 @@ export type HomeParamList = {
 
 export type AboutParamList = {
   AboutScreen: undefined;
+};
+
+export type MatchParamList = {
+    Match: undefined;
 };

@@ -7,7 +7,7 @@ export default function HomeScreen({navigation}: any) {
     return (
         <SafeAreaView style={styles.container}>
           <ScrollView style={styles.scroll}>
-            <Text style={styles.item}>Match bell</Text>
+            <Text style={styles.item} onPress={() => navigation.navigate('Match')} >Match bell</Text>
             <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
             <Text style={styles.item}>Match bells: 3</Text>
             <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />

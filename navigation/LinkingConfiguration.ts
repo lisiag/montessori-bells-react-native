@@ -2,23 +2,28 @@ import * as Linking from 'expo-linking';
 
 export default {
   prefixes: [Linking.makeUrl('/')],
-  config: {
-    screens: {
-      Root: {
+    config: {
         screens: {
-          Home: {
-            screens: {
-              HomeScreen: 'home',
+            Root: {
+                screens: {
+                    Home: {
+                        screens: {
+                            HomeScreen: 'home',
+                        },
+                    },
+                    About: {
+                        screens: {
+                            HomeScreen: 'home',
+                        },
+                    },
+                    Match: {
+                        screens: {
+                            HomeScreen: 'home',
+                        },
+                    },
+                },
             },
-          },
-          About: {
-            screens: {
-              HomeScreen: 'home',
-            },
-          },
+            NotFound: '*',
         },
-      },
-      NotFound: '*',
     },
-  },
 };
