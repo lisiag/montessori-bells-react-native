@@ -24,9 +24,7 @@ export default function HomeScreen({navigation}: any) {
             <Text style={styles.item}>Play song</Text>
             <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
             <Icon
-                reverse
-                name='information-circle'
-                type='ionicon'
+                name='info'
                 color='#517fa4'
                 onPress={() => navigation.navigate('About')}
             />
