@@ -62,12 +62,57 @@ export default function Bells() {
         });
     }
 
+    const tmpRender2 = () => {
+        return(
+            <View style={styles.row}>
+            <View style={styles.col}>
+            <Draggable >
+            <Icon
+            name='notifications'
+            color="dodgerblue"
+            size={140}
+            />
+            </Draggable>
+            </View>
+            <View style={styles.col}>
+              <Draggable >
+                <Icon
+                    name='notifications'
+                    color="dodgerblue"
+                    size={140}
+                />
+              </Draggable>
+            </View>
+            <View style={styles.col}>
+              <Draggable >
+                <Icon
+                    name='notifications'
+                    color="dodgerblue"
+                    size={140}
+                />
+              </Draggable>
+            </View>
+            </View>
+        );
+    }
+
     return (
         <View >
           <Draggable x={75} y={100} renderSize={56} renderColor='black' renderText='A' isCircle shouldReverse onShortPressRelease={()=>alert('touched!!')}/>
           <Draggable x={200} y={300} renderColor='red' renderText='B'/>
           <Draggable/>
-          {tmpRender()}
+            {tmpRender2()}
         </View>
     );
 }
+
+const styles = StyleSheet.create({
+    row: {
+        flex: 1,
+        flexDirection: 'row',
+    },
+    col: {
+        flex: 1,
+    }
+
+});
