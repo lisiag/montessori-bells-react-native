@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { StyleSheet } from 'react-native';
-
+import { Icon } from 'react-native-elements';
 import { Text, View, ScrollView, SafeAreaView } from '../components/Themed';
 
 export default function HomeScreen({navigation}: any) {
@@ -23,6 +23,13 @@ export default function HomeScreen({navigation}: any) {
             <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
             <Text style={styles.item}>Play song</Text>
             <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
+            <Icon
+                reverse
+                name='information-circle'
+                type='ionicon'
+                color='#517fa4'
+                onPress={() => navigation.navigate('About')}
+            />
             <Text style={styles.item} onPress={() => navigation.navigate('About')}>About</Text>
           </ScrollView>
         </SafeAreaView>
