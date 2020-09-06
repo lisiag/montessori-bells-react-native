@@ -1,32 +1,34 @@
 import * as React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Button } from 'react-native';
+import { createStackNavigator } from '@react-navigation/stack';
 
 import { Text, View, ScrollView, SafeAreaView } from '../components/Themed';
 
-export default function HomeScreen() {
+export default function HomeScreen({navigation}: any) {
     return (
         <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scroll}>
-        <Text style={styles.item}>Match bell</Text>
-        <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-        <Text style={styles.item}>Match bells: 3</Text>
-        <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-        <Text style={styles.item}>Match bells: octave</Text>
-        <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-        <Text style={styles.item}>Sort bells: high/low</Text>
-        <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-        <Text style={styles.item}>Sort bells: 3</Text>
-        <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-        <Text style={styles.item}>Sort bells: octave</Text>
-        <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-        <Text style={styles.item}>Make music</Text>
-        <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-        <Text style={styles.item}>Play song</Text>
-        <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-        <Text style={styles.item}>About</Text>
-      </ScrollView>
+          <ScrollView style={styles.scroll}>
+            <Text style={styles.item}>Match bell</Text>
+            <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
+            <Text style={styles.item}>Match bells: 3</Text>
+            <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
+            <Text style={styles.item}>Match bells: octave</Text>
+            <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
+            <Text style={styles.item}>Sort bells: high/low</Text>
+            <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
+            <Text style={styles.item}>Sort bells: 3</Text>
+            <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
+            <Text style={styles.item}>Sort bells: octave</Text>
+            <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
+            <Text style={styles.item}>Make music</Text>
+            <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
+            <Text style={styles.item}>Play song</Text>
+            <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
+            <Text style={styles.item}>About</Text>
+            <Button title="Go to About" onPress={() => navigation.navigate('About')} />
+          </ScrollView>
         </SafeAreaView>
-  );
+    );
 }
 
 const styles = StyleSheet.create({
