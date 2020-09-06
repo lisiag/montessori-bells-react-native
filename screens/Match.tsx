@@ -2,14 +2,22 @@ import * as React from 'react';
 import { StyleSheet } from 'react-native';
 import { Icon } from 'react-native-elements';
 import { Text, View, ScrollView, SafeAreaView } from '../components/Themed';
+import Bells from '../components/Bells';
 
 export default function Match({navigation}: any) {
+    const level = 1;
+    const instructions = "some instructions about what to do";
+    const title = "Pair the matching bells";
+    const numRows = 3;
+
     return (
-        <SafeAreaView style={styles.container}>
-          <ScrollView style={styles.scroll}>
-            <Text style={styles.item}>This is the Match page</Text>
-          </ScrollView>
-        </SafeAreaView>
+        <Bells
+            type="match"
+            numPairs={level}
+            numRows={numRows}
+            instructions={instructions}
+            title={title}
+        />
     );
 }
 
