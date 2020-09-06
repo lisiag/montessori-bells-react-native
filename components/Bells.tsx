@@ -7,93 +7,66 @@ import { Text, View, ScrollView, SafeAreaView } from '../components/Themed';
 export default function Bells() {
     const notes = [3, 7, 2];
     const notesSorted = [2, 3, 7];
-    const indices = [0, 1, 2];
-    const numColumns = 3;
+    const rowIndices = [0, 1, 2];
+    const colIndices = [0, 1, 2];
 
     const type = "match";
     const numPairs = 1;
 
-    const renderBell = (index: number) => {
-        if (numPairs !== 1 || index === 1) {
-            return (<Draggable x={50} y={50} >
-              <Icon
-                  name='notifications'
-                  color='#517fa4'
-                  size={140}
-              />
-            </Draggable>);
-        }
-    }
+    const renderCols = (rowIdx: number) => {
+        let left: any;
+        const space = (<View style={styles.col}>
+          <Icon
+              name='notifications'
+              color="red"
+              size={140}
+          />
+        </View>);
 
-    const arrangeBells = () => {
-        if (type === "match") {
-            /* Arrange the bells: on the left in random order; on the right sorted high to low
-             */
-            return indices.map(index =>
-                {renderBell(index)});
-        } else if (type === "sort") {
+        if (numPairs !== 1 || rowIdx === 1) {
+            left = (<View style={styles.draggableCol}>
+              <Draggable minX={0} minY={0} z={2000} >
+                <Icon
+                    name='notifications'
+                    color="limegreen"
+                    size={140}
+                />
+              </Draggable>
+            </View>)
         } else {
-            /* type is make_music
-               Arrange the bells from high to low down the centre column of of the grid*/
+            left = space;
         }
-    }
 
-    const tmpRender = () => {
-        return indices.map(index => {
-            let x, y, col;
-            if (index === 0) {
-                x  = y = 0;
-                col = "limegreen";
-            } else if (index === 1) {
-                x = y = 130;
-                col = "blue";
-            } else {
-                x = y = 280;
-                col = "dodgerblue";
-            }
 
-            return(<Draggable x={x} y={y} >
-              <Icon
-                  name='notifications'
-                  color={col}
-                  size={140}
-              />
-            </Draggable>);
-        });
-    }
-
-    const tmpRender2 = () => {
-        return(
-            <View style={styles.row}>
-            <View style={styles.col}>
-            <Draggable >
+        const fixed = (<View style={styles.col}>
+          <Draggable minX={0} minY={0} disabled={true}>
             <Icon
-            name='notifications'
-            color="dodgerblue"
-            size={140}
+                name='notifications'
+                color="dodgerblue"
+                size={140}
             />
-            </Draggable>
-            </View>
-            <View style={styles.col}>
-              <Draggable >
-                <Icon
-                    name='notifications'
-                    color="dodgerblue"
-                    size={140}
-                />
-              </Draggable>
-            </View>
-            <View style={styles.col}>
-              <Draggable >
-                <Icon
-                    name='notifications'
-                    color="dodgerblue"
-                    size={140}
-                />
-              </Draggable>
-            </View>
+          </Draggable>
+        </View>);
+
+        return (
+            <View style={styles.row}>
+              {left}
+              {space}
+              {fixed}
             </View>
         );
+    }
+
+        const renderRow = (rowIdx: number) => {
+            return (
+                <View key={rowIdx}>
+                  {renderCols(rowIdx)}
+                </View>
+            );
+    }
+
+    const renderRows = () => {
+        return rowIndices.map(rowIdx => renderRow(rowIdx));
     }
 
     return (
@@ -101,7 +74,7 @@ export default function Bells() {
           <Draggable x={75} y={100} renderSize={56} renderColor='black' renderText='A' isCircle shouldReverse onShortPressRelease={()=>alert('touched!!')}/>
           <Draggable x={200} y={300} renderColor='red' renderText='B'/>
           <Draggable/>
-            {tmpRender2()}
+            {renderRows()}
         </View>
     );
 }
@@ -113,6 +86,9 @@ const styles = StyleSheet.create({
     },
     col: {
         flex: 1,
+    },
+    draggableCol: {
+        flex: 1,
+        zIndex: 33,
     }
-
 });
