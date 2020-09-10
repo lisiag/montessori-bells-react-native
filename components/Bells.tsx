@@ -100,25 +100,23 @@ export default function Bells() {
 
     return (
         <View style={{flex: 1}}>
-          {/* { renderFixedBells() } */}
+          { renderFixedBells() }
           <Animated.View
               style={[
                   {
-                      width: 100,
-                      height: 100,
-                      borderRadius: 100/2,
-                      backgroundColor: 'red'
+                      width: BELLSIZE,
+                      height: BELLSIZE,
                   },
                   pan.getLayout()
               ]}
               {...panResponder.panHandlers}
-          />
-            {/* <Icon
+          >
+             <Icon
                 name='notifications'
                 color="limegreen"
                 size={BELLSIZE}
                 />
-                </Animated.View> */}
+                </Animated.View>
         </View>
     );
 }
