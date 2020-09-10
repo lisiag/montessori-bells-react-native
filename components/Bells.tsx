@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Dimensions, Animated, StyleSheet, PanResponder } from "react-native";
+import { Dimensions, Animated, StyleSheet, PanResponder, PanResponderInstance } from "react-native";
 import Draggable from 'react-native-draggable';
 import { Icon } from 'react-native-elements';
 import { View } from '../components/Themed';
@@ -15,8 +15,8 @@ const screenWidth = Math.round(Dimensions.get('window').width);
 const screenHeight = Math.round(Dimensions.get('window').height);
 /* The position of top for the top bell in each column */
 const TOPSTARTPOS = -5;
-/* The position of top for the current fixed bell */
-let fixedBellTop = TOPSTARTPOS;
+/* The position of top for the current bell being drawn */
+let bellTop = TOPSTARTPOS;
 /* The furthest left/up/right a bell can be dragged */
 const LEFTBOUND = -15;
 const TOPBOUND = -9;
@@ -32,32 +32,11 @@ export default function Bells() {
     /* The furthest down a bell can be dragged */
     const BOTTOMBOUND = Math.max(screenHeight - (BELLSIZE) + 30, (numRows + 1) * (BELLSIZE + GAP));
 
-    const renderDraggable = (rowIdx: number, x: number, y: number) => {
-        if (numPairs !== 1 || rowIdx === 1) {
-            return (<View key={rowIdx}>
-              <Draggable x={x} y={y} minX={LEFTBOUND} minY={TOPBOUND} maxX={RIGHTBOUND} maxY={BOTTOMBOUND}>
-                <Icon
-                    name='notifications'
-                    color="limegreen"
-                    size={BELLSIZE}
-                />
-              </Draggable>
-            </View>);
-        } else {
-            return;
-        }
-    }
-
-    const renderDraggableBells = () => {
-        const x = 0;
-        return rowIndices.map(rowIdx => {
-            const y = rowIdx * (BELLSIZE + GAP);
-            return renderDraggable(rowIdx, x, y);
-        });
-    }
+    let pans: Array<Animated.ValueXY> = [];
+    let panResponders: Array<PanResponderInstance> = [];
 
     const renderFixed = (rowIdx: number) => {
-        return  (<View key={rowIdx} style={[styles.fixedBell, {top: fixedBellTop}]} >
+        return  (<View key={rowIdx} style={[styles.fixedBell, {top: bellTop}]} >
           <Icon
               name='notifications'
               color="dodgerblue"
@@ -68,52 +47,66 @@ export default function Bells() {
 
     const renderFixedBells = () => {
         return rowIndices.map(rowIdx => {
-            fixedBellTop = TOPSTARTPOS + rowIdx * BELLSIZE;
+            bellTop = TOPSTARTPOS + rowIdx * BELLSIZE;
             return renderFixed(rowIdx);
         });
     }
 
-    const pan = useRef(new Animated.ValueXY({x: -11, y: TOPSTARTPOS})).current;
+    const renderDraggable = (rowIdx: number) => {
+        pans.push(useRef(new Animated.ValueXY({x: -11, y: TOPSTARTPOS})).current);
+        panResponders.push(
+            useRef(
+                PanResponder.create({
+                    /* onStartShouldSetPanResponder: () => true, */
+                    onMoveShouldSetPanResponder: () => true,
+                    onPanResponderGrant: () => {
+                        pans[rowIdx].setOffset({
+                            x: (pans[rowIdx].x as any)._value,
+                            y: (pans[rowIdx].y as any)._value
+                        });
+                    },
+                    onPanResponderMove: Animated.event(
+                        [
+                            null,
+                            { dx: pans[rowIdx].x, dy: pans[rowIdx].y }
+                        ],
+                        { useNativeDriver: false }
+                    ),
+                    onPanResponderRelease: () => {
+                        pans[rowIdx].flattenOffset();
+                    }
+                })
+            ).current
+        );
 
-    const panResponder = useRef(
-        PanResponder.create({
-            /* onStartShouldSetPanResponder: () => true, */
-            onMoveShouldSetPanResponder: () => true,
-            onPanResponderGrant: () => {
-                pan.setOffset({
-                    x: (pan.x as any)._value,
-                    y: (pan.y as any)._value
-                });
-            },
-            onPanResponderMove: Animated.event(
-                [
-                    null,
-                    { dx: pan.x, dy: pan.y }
-                ],
-                { useNativeDriver: false }
-            ),
-            onPanResponderRelease: () => {
-                pan.flattenOffset();
-            }
-        })
-    ).current;
+        return (
+            <Animated.View key={rowIdx}
+                style={[
+                    styles.draggable,
+                    pans[rowIdx].getLayout()
+                ]}
+                {...panResponders[rowIdx].panHandlers}
+            >
+              <Icon
+                  name='notifications'
+                  color="limegreen"
+                  size={BELLSIZE}
+              />
+            </Animated.View>
+        );
+    }
+
+    const renderDraggables = () => {
+        return rowIndices.map(rowIdx => {
+            bellTop = TOPSTARTPOS + rowIdx * BELLSIZE;
+            return renderDraggable(rowIdx);
+        });
+    }
 
     return (
         <View style={{flex: 1}}>
           { renderFixedBells() }
-          <Animated.View
-              style={[
-                  styles.draggable,
-                  pan.getLayout()
-              ]}
-              {...panResponder.panHandlers}
-          >
-            <Icon
-                name='notifications'
-                color="limegreen"
-                size={BELLSIZE}
-            />
-          </Animated.View>
+          { renderDraggables() }
         </View>
     );
 }
