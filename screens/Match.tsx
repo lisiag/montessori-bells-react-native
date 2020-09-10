@@ -11,12 +11,13 @@ export default function Match({navigation}: any) {
     const numRows = 3;
 
     return (
+        /* type="match"
+           numPairs={level}
+           numRows={numRows}
+           instructions={instructions}
+           title={title} */
         <Bells
-            type="match"
-            numPairs={level}
-            numRows={numRows}
-            instructions={instructions}
-            title={title}
+
         />
     );
 }

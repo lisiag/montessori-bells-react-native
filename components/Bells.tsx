@@ -1,15 +1,15 @@
 import * as React from 'react';
-import { StyleSheet, Dimensions } from 'react-native';
-import { Icon } from 'react-native-elements';
+import { Dimensions, Animated, StyleSheet, PanResponder } from "react-native";
 import Draggable from 'react-native-draggable';
-import { Text, View, ScrollView, SafeAreaView } from '../components/Themed';
+import { Icon } from 'react-native-elements';
+import { View } from '../components/Themed';
 
 const BELLSIZE = 140;
 const GAP = 10;
 /* Use the screen width to work out the placement of the bells. In the future, if this app is
-deployed not just for mobile devices but also for web, this will need to be modified so that on a
-larger device such as laptop, the bells placement doesn't use the entire width of the screen but
-only a portion in the centre */
+   deployed not just for mobile devices but also for web, this will need to be modified so that on a
+   larger device such as laptop, the bells placement doesn't use the entire width of the screen but
+   only a portion in the centre */
 const screenWidth = Math.round(Dimensions.get('window').width);
 const screenHeight = Math.round(Dimensions.get('window').height);
 const LEFTBOUND = -15;
@@ -69,16 +69,51 @@ export default function Bells() {
         });
     }
 
+    const pan = React.useRef(new Animated.ValueXY()).current;
+
+    const panResponder = React.useRef(
+        PanResponder.create({
+            onStartShouldSetPanResponder: () => true,
+            onPanResponderGrant: () => {
+                pan.setOffset({
+                    x: pan.x._value,
+                    y: pan.y._value
+                });
+            },
+            onPanResponderMove: Animated.event(
+                [
+                    null,
+                    { dx: pan.x, dy: pan.y }
+                ]
+            ),
+            onPanResponderRelease: () => {
+                pan.flattenOffset();
+            }
+        })
+    ).current;
+
     return (
-        <ScrollView>
-          <Draggable x={75} y={100} renderSize={56} renderColor='black' renderText='A' isCircle shouldReverse onShortPressRelease={()=>alert('touched!!')}/>
-          <Draggable x={200} y={300} renderColor='red' renderText='B'/>
-          <Draggable/>
-          {renderFixedBells()}
-          {renderDraggableBells()}
-        </ScrollView>
+        <View style={styles.container}>
+          <Animated.View
+              style={{
+                  transform: [{ translateX: pan.x }, { translateY: pan.y }]
+              }}
+              {...panResponder.panHandlers}
+          >
+            <Icon
+                name='notifications'
+                color="dodgerblue"
+                size={BELLSIZE}
+            />
+          </Animated.View>
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center"
+    },
 });
