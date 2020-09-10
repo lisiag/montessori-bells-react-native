@@ -5,6 +5,7 @@ import { Icon } from 'react-native-elements';
 import { View } from '../components/Themed';
 
 const BELLSIZE = 140;
+/* the vertical gap between bells before they are dragged */
 const GAP = 10;
 /* Use the screen width to work out the placement of the bells. In the future, if this app is
    deployed not just for mobile devices but also for web, this will need to be modified so that on a
@@ -12,6 +13,11 @@ const GAP = 10;
    only a portion in the centre */
 const screenWidth = Math.round(Dimensions.get('window').width);
 const screenHeight = Math.round(Dimensions.get('window').height);
+/* The position of top for the top bell in each column */
+const TOPSTARTPOS = -5;
+/* The position of top for the current fixed bell */
+let fixedBellTop = TOPSTARTPOS;
+/* The furthest left/up/right a bell can be dragged */
 const LEFTBOUND = -15;
 const TOPBOUND = -9;
 const RIGHTBOUND = screenWidth + 15;
@@ -23,6 +29,7 @@ export default function Bells() {
     const rowIndices = [0, 1, 2];
     const type = "match";
     const numPairs = 1;
+    /* The furthest down a bell can be dragged */
     const BOTTOMBOUND = Math.max(screenHeight - (BELLSIZE) + 30, (numRows + 1) * (BELLSIZE + GAP));
 
     const renderDraggable = (rowIdx: number, x: number, y: number) => {
@@ -49,23 +56,20 @@ export default function Bells() {
         });
     }
 
-    const renderFixed = (rowIdx: number, x: number, y: number) => {
-        return  (<View key={rowIdx}>
-          <Draggable x={x} y={y}  minX={LEFTBOUND} minY={TOPBOUND} maxX={RIGHTBOUND} maxY={BOTTOMBOUND} disabled={true}>
-            <Icon
-                name='notifications'
-                color="dodgerblue"
-                size={BELLSIZE}
-            />
-          </Draggable>
+    const renderFixed = (rowIdx: number) => {
+        return  (<View key={rowIdx} style={[styles.fixedBell, {top: fixedBellTop}]} >
+          <Icon
+              name='notifications'
+              color="dodgerblue"
+              size={BELLSIZE}
+          />
         </View>);
     }
 
     const renderFixedBells = () => {
-        const x = screenWidth - (BELLSIZE + GAP);
         return rowIndices.map(rowIdx => {
-            const y = rowIdx * (BELLSIZE + GAP);
-            return renderFixed(rowIdx, x, y);
+            fixedBellTop = TOPSTARTPOS + rowIdx * BELLSIZE;
+            return renderFixed(rowIdx);
         });
     }
 
@@ -84,7 +88,8 @@ export default function Bells() {
                 [
                     null,
                     { dx: pan.x, dy: pan.y }
-                ]
+                ],
+                { useNativeDriver: false }
             ),
             onPanResponderRelease: () => {
                 pan.flattenOffset();
@@ -93,16 +98,17 @@ export default function Bells() {
     ).current;
 
     return (
-        <View style={styles.container}>
+        <View>
+          { renderFixedBells() }
           <Animated.View
-              style={{
+              style={[{
                   transform: [{ translateX: pan.x }, { translateY: pan.y }]
-              }}
+              }]}
               {...panResponder.panHandlers}
           >
             <Icon
                 name='notifications'
-                color="dodgerblue"
+                color="limegreen"
                 size={BELLSIZE}
             />
           </Animated.View>
@@ -113,7 +119,15 @@ export default function Bells() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: "center",
-        justifyContent: "center"
     },
+    fixedBell: {
+        position: 'absolute',
+        left: screenWidth - (BELLSIZE + GAP) + 20,
+    },
+    draggable: {
+        position: 'absolute',
+        left: 0,
+        top: TOPSTARTPOS,
+
+    }
 });
