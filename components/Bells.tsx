@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useRef, useState } from 'react';
 import { Dimensions, Animated, StyleSheet, PanResponder } from "react-native";
 import Draggable from 'react-native-draggable';
 import { Icon } from 'react-native-elements';
@@ -73,11 +73,12 @@ export default function Bells() {
         });
     }
 
-    const pan = React.useRef(new Animated.ValueXY()).current;
+    const pan = useRef(new Animated.ValueXY()).current;
 
-    const panResponder = React.useRef(
+    const panResponder = useRef(
         PanResponder.create({
-            onStartShouldSetPanResponder: () => true,
+            /* onStartShouldSetPanResponder: () => true, */
+            onMoveShouldSetPanResponder: () => true,
             onPanResponderGrant: () => {
                 pan.setOffset({
                     x: pan.x._value,
@@ -98,20 +99,26 @@ export default function Bells() {
     ).current;
 
     return (
-        <View>
-          { renderFixedBells() }
+        <View style={{flex: 1}}>
+          {/* { renderFixedBells() } */}
           <Animated.View
-              style={[{
-                  transform: [{ translateX: pan.x }, { translateY: pan.y }]
-              }]}
+              style={[
+                  {
+                      width: 100,
+                      height: 100,
+                      borderRadius: 100/2,
+                      backgroundColor: 'red'
+                  },
+                  pan.getLayout()
+              ]}
               {...panResponder.panHandlers}
-          >
-            <Icon
+          />
+            {/* <Icon
                 name='notifications'
                 color="limegreen"
                 size={BELLSIZE}
-            />
-          </Animated.View>
+                />
+                </Animated.View> */}
         </View>
     );
 }
