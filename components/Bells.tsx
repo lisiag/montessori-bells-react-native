@@ -73,7 +73,7 @@ export default function Bells() {
         });
     }
 
-    const pan = useRef(new Animated.ValueXY()).current;
+    const pan = useRef(new Animated.ValueXY({x: -11, y: TOPSTARTPOS})).current;
 
     const panResponder = useRef(
         PanResponder.create({
@@ -103,20 +103,17 @@ export default function Bells() {
           { renderFixedBells() }
           <Animated.View
               style={[
-                  {
-                      width: BELLSIZE,
-                      height: BELLSIZE,
-                  },
+                  styles.draggable,
                   pan.getLayout()
               ]}
               {...panResponder.panHandlers}
           >
-             <Icon
+            <Icon
                 name='notifications'
                 color="limegreen"
                 size={BELLSIZE}
-                />
-                </Animated.View>
+            />
+          </Animated.View>
         </View>
     );
 }
@@ -130,9 +127,7 @@ const styles = StyleSheet.create({
         left: screenWidth - (BELLSIZE + GAP) + 20,
     },
     draggable: {
-        position: 'absolute',
-        left: 0,
-        top: TOPSTARTPOS,
-
+        width: BELLSIZE,
+        height: BELLSIZE,
     }
 });
