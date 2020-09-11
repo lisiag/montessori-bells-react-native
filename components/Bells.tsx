@@ -1,6 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Dimensions, Animated, StyleSheet, PanResponder, PanResponderInstance } from "react-native";
-import Draggable from 'react-native-draggable';
+import { Dimensions, Animated, StyleSheet, PanResponder, PanResponderInstance, TouchableWithoutFeedback } from "react-native";
 import { Icon } from 'react-native-elements';
 import { View } from '../components/Themed';
 
@@ -81,17 +80,22 @@ export default function Bells() {
 
         return (
             <Animated.View key={rowIdx}
-                style={[
-                    styles.draggable,
-                    pans[rowIdx].getLayout()
-                ]}
-                {...panResponders[rowIdx].panHandlers}
+                           style={[
+                               styles.draggable,
+                               pans[rowIdx].getLayout()
+                           ]}
+                           {...panResponders[rowIdx].panHandlers}
             >
-              <Icon
-                  name='notifications'
-                  color="limegreen"
-                  size={BELLSIZE}
-              />
+              <TouchableWithoutFeedback onPress={() => {
+                  console.log("onPress");
+                  alert('You tapped a bell!')
+              }}>
+                <Icon
+                    name='notifications'
+                    color="limegreen"
+                    size={BELLSIZE}
+                />
+              </TouchableWithoutFeedback>
             </Animated.View>
         );
     }
