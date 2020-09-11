@@ -45,7 +45,7 @@ export default function Bells() {
     let pans: Array<Animated.ValueXY> = [];
     let panResponders: Array<PanResponderInstance> = [];
 
-    const a4 = require("../assets/sounds/pianoA4.mp3");
+    const a4 = require("../../assets/sounds/pianoA4.mp3");
 
     const renderFixed = (rowIdx: number) => {
         return (
