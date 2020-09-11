@@ -1,7 +1,15 @@
-import React, { useRef, useState } from 'react';
-import { Dimensions, Animated, StyleSheet, PanResponder, PanResponderInstance, TouchableWithoutFeedback } from "react-native";
-import { Icon } from 'react-native-elements';
-import { View } from '../components/Themed';
+import React, { useRef, useState } from "react";
+import {
+    Dimensions,
+    Animated,
+    StyleSheet,
+    PanResponder,
+    PanResponderInstance,
+    TouchableWithoutFeedback,
+} from "react-native";
+import { Icon } from "react-native-elements";
+import { Audio } from "expo-av";
+import { View } from "../components/Themed";
 
 const BELLSIZE = 140;
 /* the vertical gap between bells before they are dragged */
@@ -10,8 +18,8 @@ const GAP = 10;
    deployed not just for mobile devices but also for web, this will need to be modified so that on a
    larger device such as laptop, the bells placement doesn't use the entire width of the screen but
    only a portion in the centre */
-const screenWidth = Math.round(Dimensions.get('window').width);
-const screenHeight = Math.round(Dimensions.get('window').height);
+const screenWidth = Math.round(Dimensions.get("window").width);
+const screenHeight = Math.round(Dimensions.get("window").height);
 /* The position of top for the top bell in each column */
 const TOPSTARTPOS = -5;
 /* The position of top for the current bell being drawn */
@@ -29,30 +37,46 @@ export default function Bells() {
     const type = "match";
     const numPairs = 1;
     /* The furthest down a bell can be dragged */
-    const BOTTOMBOUND = Math.max(screenHeight - (BELLSIZE) + 30, (numRows + 1) * (BELLSIZE + GAP));
+    const BOTTOMBOUND = Math.max(
+        screenHeight - BELLSIZE + 30,
+        (numRows + 1) * (BELLSIZE + GAP)
+    );
 
     let pans: Array<Animated.ValueXY> = [];
     let panResponders: Array<PanResponderInstance> = [];
 
+    const a4 = require("../assets/sounds/pianoA4.mp3");
+
     const renderFixed = (rowIdx: number) => {
-        return  (<View key={rowIdx} style={[styles.fixedBell, {top: bellTop}]} >
-          <Icon
-              name='notifications'
-              color="dodgerblue"
-              size={BELLSIZE}
-          />
-        </View>);
-    }
+        return (
+            <View key={rowIdx} style={[styles.fixedBell, { top: bellTop }]}>
+                <Icon name="notifications" color="dodgerblue" size={BELLSIZE} />
+            </View>
+        );
+    };
 
     const renderFixedBells = () => {
-        return rowIndices.map(rowIdx => {
+        return rowIndices.map((rowIdx) => {
             bellTop = TOPSTARTPOS + rowIdx * BELLSIZE;
             return renderFixed(rowIdx);
         });
+    };
+
+    async function playSound() {
+        try {
+            await Audio.Sound.createAsync(a4, {
+                shouldPlay: true,
+            });
+        } catch (error) {
+            console.error(error);
+            // An error occurred!
+        }
     }
 
     const renderDraggable = (rowIdx: number) => {
-        pans.push(useRef(new Animated.ValueXY({x: -11, y: TOPSTARTPOS})).current);
+        pans.push(
+            useRef(new Animated.ValueXY({ x: -11, y: TOPSTARTPOS })).current
+        );
         panResponders.push(
             useRef(
                 PanResponder.create({
@@ -61,56 +85,48 @@ export default function Bells() {
                     onPanResponderGrant: () => {
                         pans[rowIdx].setOffset({
                             x: (pans[rowIdx].x as any)._value,
-                            y: (pans[rowIdx].y as any)._value
+                            y: (pans[rowIdx].y as any)._value,
                         });
                     },
                     onPanResponderMove: Animated.event(
-                        [
-                            null,
-                            { dx: pans[rowIdx].x, dy: pans[rowIdx].y }
-                        ],
+                        [null, { dx: pans[rowIdx].x, dy: pans[rowIdx].y }],
                         { useNativeDriver: false }
                     ),
                     onPanResponderRelease: () => {
                         pans[rowIdx].flattenOffset();
-                    }
+                    },
                 })
             ).current
         );
 
         return (
-            <Animated.View key={rowIdx}
-                           style={[
-                               styles.draggable,
-                               pans[rowIdx].getLayout()
-                           ]}
-                           {...panResponders[rowIdx].panHandlers}
+            <Animated.View
+                key={rowIdx}
+                style={[styles.draggable, pans[rowIdx].getLayout()]}
+                {...panResponders[rowIdx].panHandlers}
             >
-              <TouchableWithoutFeedback onPress={() => {
-                  console.log("onPress");
-                  alert('You tapped a bell!')
-              }}>
-                <Icon
-                    name='notifications'
-                    color="limegreen"
-                    size={BELLSIZE}
-                />
-              </TouchableWithoutFeedback>
+                <TouchableWithoutFeedback onPress={playSound}>
+                    <Icon
+                        name="notifications"
+                        color="limegreen"
+                        size={BELLSIZE}
+                    />
+                </TouchableWithoutFeedback>
             </Animated.View>
         );
-    }
+    };
 
     const renderDraggables = () => {
-        return rowIndices.map(rowIdx => {
+        return rowIndices.map((rowIdx) => {
             bellTop = TOPSTARTPOS + rowIdx * BELLSIZE;
             return renderDraggable(rowIdx);
         });
-    }
+    };
 
     return (
-        <View style={{flex: 1}}>
-          { renderFixedBells() }
-          { renderDraggables() }
+        <View style={{ flex: 1 }}>
+            {renderFixedBells()}
+            {renderDraggables()}
         </View>
     );
 }
@@ -120,11 +136,11 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     fixedBell: {
-        position: 'absolute',
+        position: "absolute",
         left: screenWidth - (BELLSIZE + GAP) + 20,
     },
     draggable: {
         width: BELLSIZE,
         height: BELLSIZE,
-    }
+    },
 });
