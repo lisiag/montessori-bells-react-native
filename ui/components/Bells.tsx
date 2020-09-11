@@ -71,7 +71,17 @@ export default function Bells() {
     const renderFixed = (rowIdx: number) => {
         return (
             <View key={rowIdx} style={[styles.fixedBell, { top: bellTop }]}>
-                <Icon name="notifications" color="dodgerblue" size={BELLSIZE} />
+                <TouchableWithoutFeedback
+                    onPress={() => {
+                        playSound(notesSorted[rowIdx]);
+                    }}
+                >
+                    <Icon
+                        name="notifications"
+                        color="dodgerblue"
+                        size={BELLSIZE}
+                    />
+                </TouchableWithoutFeedback>
             </View>
         );
     };
