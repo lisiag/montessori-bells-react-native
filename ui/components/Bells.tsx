@@ -1,14 +1,15 @@
-import React, { useRef, useState } from "react";
+import { Audio } from "expo-av";
+import React, { useRef } from "react";
 import {
-    Dimensions,
     Animated,
-    StyleSheet,
+    Dimensions,
     PanResponder,
     PanResponderInstance,
+    StyleSheet,
     TouchableWithoutFeedback,
 } from "react-native";
 import { Icon } from "react-native-elements";
-import { Audio } from "expo-av";
+import { Util } from "../../business/util";
 import { View } from "../components/Themed";
 
 const BELLSIZE = 140;
@@ -30,12 +31,10 @@ const TOPBOUND = -9;
 const RIGHTBOUND = screenWidth + 15;
 
 export default function Bells() {
-    const numRows = 3;
-    const notes = [3, 7, 2];
-    const notesSorted = [2, 3, 7];
-    const rowIndices = [0, 1, 2];
     const type = "match";
     const numPairs = 1;
+    const numRows = 3;
+
     /* The furthest down a bell can be dragged */
     const BOTTOMBOUND = Math.max(
         screenHeight - BELLSIZE + 30,
@@ -45,7 +44,29 @@ export default function Bells() {
     let pans: Array<Animated.ValueXY> = [];
     let panResponders: Array<PanResponderInstance> = [];
 
-    const a4 = require("../../assets/sounds/pianoA4.mp3");
+    /*
+       Get random notes for the bells in the righthand column
+     */
+    const notes = Util.getRandoms(8, numRows);
+
+    /* Sort bells from high to low for the righthand column */
+    const notesSorted = notes.slice().sort().reverse();
+
+    /* Create a list of indices so that list.map() can access both "notes" and "notesSorted" arrays */
+    let rowIndices: number[] = [];
+    for (let i = 0; i < notes.length; ++i) {
+        rowIndices.push(i);
+    }
+
+    const C4 = require("../../assets/sounds/pianoC4.mp3");
+    const D4 = require("../../assets/sounds/pianoD4.mp3");
+    const E4 = require("../../assets/sounds/pianoE4.mp3");
+    const F4 = require("../../assets/sounds/pianoF4.mp3");
+    const G4 = require("../../assets/sounds/pianoG4.mp3");
+    const A4 = require("../../assets/sounds/pianoA4.mp3");
+    const B4 = require("../../assets/sounds/pianoB4.mp3");
+    const C5 = require("../../assets/sounds/pianoC5.mp3");
+    const mp3s = [C4, D4, E4, F4, G4, A4, B4, C5];
 
     const renderFixed = (rowIdx: number) => {
         return (
@@ -62,14 +83,14 @@ export default function Bells() {
         });
     };
 
-    async function playSound() {
+    async function playSound(note: number) {
+        const mp3 = mp3s[note];
         try {
-            await Audio.Sound.createAsync(a4, {
+            await Audio.Sound.createAsync(mp3, {
                 shouldPlay: true,
             });
         } catch (error) {
             console.error(error);
-            // An error occurred!
         }
     }
 
@@ -105,7 +126,11 @@ export default function Bells() {
                 style={[styles.draggable, pans[rowIdx].getLayout()]}
                 {...panResponders[rowIdx].panHandlers}
             >
-                <TouchableWithoutFeedback onPress={playSound}>
+                <TouchableWithoutFeedback
+                    onPress={() => {
+                        playSound(notes[rowIdx]);
+                    }}
+                >
                     <Icon
                         name="notifications"
                         color="limegreen"
