@@ -1,45 +1,43 @@
-import * as React from 'react';
-import { StyleSheet } from 'react-native';
-import { Icon } from 'react-native-elements';
-import { Text, View, ScrollView, SafeAreaView } from '../components/Themed';
-import Bells from '../components/Bells';
+import * as React from "react";
+import Bells from "../components/Bells";
 
-export default function Match({navigation}: any) {
-    const level = 1;
-    const instructions = "some instructions about what to do";
+export default function Match(_opts: any) {
+    let level = 1;
     const title = "Pair the matching bells";
-    const numRows = 3;
+    let numRows: number;
+
+    switch (level) {
+        case 1:
+        case 3:
+            numRows = 3;
+            break;
+        default:
+            numRows = 8;
+    }
+
+    let sing_plural;
+    if (level === 1) {
+        sing_plural = "Tap each bell to play its note. Drag the ";
+    } else {
+        sing_plural = "Tap each bell to play its note. Drag each ";
+    }
+    const instructions = React.createElement(
+        "div",
+        {},
+        sing_plural,
+        React.createElement("span", { id: "draggableColor" }, "green"),
+        " bell and drop it next to the ",
+        React.createElement("span", { id: "fixedBellColor" }, "blue"),
+        " bell that plays the same note."
+    );
 
     return (
-        /* type="match"
-           numPairs={level}
-           numRows={numRows}
-           instructions={instructions}
-           title={title} */
         <Bells
-
+            type="match"
+            numPairs={level}
+            numRows={numRows}
+            instructions={instructions}
+            title={title}
         />
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    scroll: {
-        width: '100%',
-        paddingLeft: 30,
-        paddingTop: 30,
-        paddingBottom: 30,
-    },
-    item: {
-    fontSize: 20,
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
-  },
-});

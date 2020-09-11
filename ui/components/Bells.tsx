@@ -1,5 +1,5 @@
 import { Audio } from "expo-av";
-import React, { useRef } from "react";
+import React, { useRef, DetailedReactHTMLElement, HTMLAttributes } from "react";
 import {
     Animated,
     Dimensions,
@@ -30,24 +30,31 @@ const LEFTBOUND = -15;
 const TOPBOUND = -9;
 const RIGHTBOUND = screenWidth + 15;
 
-export default function Bells() {
-    const type = "match";
-    const numPairs = 1;
-    const numRows = 3;
+export interface BellsProps {
+    type: string /* Are these bells wanted for a matching activity, sorting activity or making music activity? */;
+    numPairs: number /* the number of pairs of bells for user to match; i.e. the number of bells in the lefthand col */;
+    numRows: number /* the number of rows of bells; the number of bells in the righthand column */;
+    instructions: DetailedReactHTMLElement<
+        HTMLAttributes<HTMLElement>,
+        HTMLElement
+    >;
+    title: string;
+}
 
+export default function Bells(props: BellsProps) {
     /* The furthest down a bell can be dragged */
     const BOTTOMBOUND = Math.max(
         screenHeight - BELLSIZE + 30,
-        (numRows + 1) * (BELLSIZE + GAP)
+        (props.numRows + 1) * (BELLSIZE + GAP)
     );
 
-    let pans: Array<Animated.ValueXY> = [];
-    let panResponders: Array<PanResponderInstance> = [];
+    let pans: Array<Animated.ValueXY | null> = [];
+    let panResponders: Array<PanResponderInstance | null> = [];
 
     /*
        Get random notes for the bells in the righthand column
      */
-    const notes = Util.getRandoms(8, numRows);
+    const notes = Util.getRandoms(8, props.numRows);
 
     /* Sort bells from high to low for the righthand column */
     const notesSorted = notes.slice().sort().reverse();
@@ -105,6 +112,15 @@ export default function Bells() {
     }
 
     const renderDraggable = (rowIdx: number) => {
+        /* If numPairs is 1, only render a draggable at rowIdx 1. If numPairs is greater than 1 (3
+        or 8), render a draggable in every row */
+        if (props.numPairs == 1 && rowIdx != 1) {
+            /* push placeholders into pans and panResponders so that rowIndexes match up between the two */
+            pans.push(null);
+            panResponders.push(null);
+            return;
+        }
+
         pans.push(
             useRef(new Animated.ValueXY({ x: -11, y: TOPSTARTPOS })).current
         );
@@ -114,17 +130,17 @@ export default function Bells() {
                     /* onStartShouldSetPanResponder: () => true, */
                     onMoveShouldSetPanResponder: () => true,
                     onPanResponderGrant: () => {
-                        pans[rowIdx].setOffset({
-                            x: (pans[rowIdx].x as any)._value,
-                            y: (pans[rowIdx].y as any)._value,
+                        pans[rowIdx]!.setOffset({
+                            x: (pans[rowIdx]!.x as any)._value,
+                            y: (pans[rowIdx]!.y as any)._value,
                         });
                     },
                     onPanResponderMove: Animated.event(
-                        [null, { dx: pans[rowIdx].x, dy: pans[rowIdx].y }],
+                        [null, { dx: pans[rowIdx]!.x, dy: pans[rowIdx]!.y }],
                         { useNativeDriver: false }
                     ),
                     onPanResponderRelease: () => {
-                        pans[rowIdx].flattenOffset();
+                        pans[rowIdx]!.flattenOffset();
                     },
                 })
             ).current
@@ -133,8 +149,8 @@ export default function Bells() {
         return (
             <Animated.View
                 key={rowIdx}
-                style={[styles.draggable, pans[rowIdx].getLayout()]}
-                {...panResponders[rowIdx].panHandlers}
+                style={[styles.draggable, pans[rowIdx]!.getLayout()]}
+                {...panResponders[rowIdx]!.panHandlers}
             >
                 <TouchableWithoutFeedback
                     onPress={() => {
