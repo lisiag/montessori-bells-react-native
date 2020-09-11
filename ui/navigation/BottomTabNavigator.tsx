@@ -5,15 +5,15 @@ import * as React from "react";
 
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
-import HomeScreen from "../ui/screens/HomeScreen";
-import AboutScreen from "../ui/screens/AboutScreen";
-import Match from "../ui/screens/Match";
+import HomeScreen from "../screens/HomeScreen";
+import AboutScreen from "../screens/AboutScreen";
+import Match from "../screens/Match";
 import {
     BottomTabParamList,
     HomeParamList,
     AboutParamList,
     MatchParamList,
-} from "../types";
+} from "../../types";
 
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
