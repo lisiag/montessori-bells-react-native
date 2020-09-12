@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { Icon } from "react-native-elements";
 import { Util } from "../../business/util";
-import { View } from "../components/Themed";
+import { View, ScrollView } from "../components/Themed";
 
 const BELLSIZE = 140;
 /* the vertical gap between bells before they are dragged */
@@ -175,10 +175,10 @@ export default function Bells(props: BellsProps) {
     };
 
     return (
-        <View style={{ flex: 1 }}>
+        <ScrollView style={{ flex: 1 }}>
             {renderFixedBells()}
             {renderDraggables()}
-        </View>
+        </ScrollView>
     );
 }
 

@@ -2,7 +2,7 @@ import * as React from "react";
 import Bells from "../components/Bells";
 
 export default function Match(_opts: any) {
-    let level = 1;
+    let level = 3;
     const title = "Pair the matching bells";
     let numRows: number;
 
