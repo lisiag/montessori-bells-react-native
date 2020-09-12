@@ -5,10 +5,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import useCachedResources from "./ui/hooks/useCachedResources";
 import useColorScheme from "./ui/hooks/useColorScheme";
-import Navigation from "./ui/navigation";
-
 import "react-native-gesture-handler";
-
 import { NavigationContainer } from "@react-navigation/native";
 import HomeScreen from "./ui/screens/HomeScreen";
 import AboutScreen from "./ui/screens/AboutScreen";
@@ -17,9 +14,18 @@ import Match from "./ui/screens/Match";
 
 const Stack = createStackNavigator();
 
+const loginButton = () => {
+    return (
+        <Button
+            onPress={() => alert("This is a button!")}
+            title="Login"
+            color="#000"
+        />
+    );
+};
+
 export default function App() {
     const isLoadingComplete = useCachedResources();
-    const colorScheme = useColorScheme();
 
     if (!isLoadingComplete) {
         return null;
@@ -31,20 +37,27 @@ export default function App() {
                         name="Home"
                         component={HomeScreen}
                         options={{
-                            title: "Welcome",
-                            headerRight: () => (
-                                <Button
-                                    onPress={() => alert("This is a button!")}
-                                    title="Login"
-                                    color="#000"
-                                />
-                            ),
+                            title: "Home",
+                            headerRight: loginButton,
                         }}
                     />
-                    <Stack.Screen name="About" component={AboutScreen} />
-                    <Stack.Screen name="Match" component={Match} />
+                    <Stack.Screen
+                        name="About"
+                        component={AboutScreen}
+                        options={{
+                            title: "About",
+                            headerRight: loginButton,
+                        }}
+                    />
+                    <Stack.Screen
+                        name="Match"
+                        component={Match}
+                        options={{
+                            title: "Pair the matching bells",
+                            headerRight: loginButton,
+                        }}
+                    />
                 </Stack.Navigator>
-                {/* Rest of your app code */}
             </NavigationContainer>
         );
     }
