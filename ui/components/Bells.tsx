@@ -112,12 +112,9 @@ export default function Bells(props: BellsProps) {
     }
 
     const renderDraggable = (rowIdx: number) => {
-        /* If numPairs is 1, only render a draggable at rowIdx 1. If numPairs is greater than 1 (3
+        /* If numPairs is 1, only render a draggable at rowIdx 0. If numPairs is greater than 1 (3
         or 8), render a draggable in every row */
-        if (props.numPairs == 1 && rowIdx != 1) {
-            /* push placeholders into pans and panResponders so that rowIndexes match up between the two */
-            pans.push(null);
-            panResponders.push(null);
+        if (props.numPairs == 1 && rowIdx != 0) {
             return;
         }
 
@@ -174,12 +171,22 @@ export default function Bells(props: BellsProps) {
         });
     };
 
-    return (
-        <ScrollView style={{ flex: 1 }}>
-            {renderFixedBells()}
-            {renderDraggables()}
-        </ScrollView>
-    );
+    if (props.numPairs == 8) {
+        return (
+            <ScrollView style={{ flex: 1 }}>
+                {renderFixedBells()}
+                {renderDraggables()}
+            </ScrollView>
+        );
+    } else {
+        /* only 1 fixed bell displays when numPairs is 1 if ScrollView is used */
+        return (
+            <View style={{ flex: 1 }}>
+                {renderFixedBells()}
+                {renderDraggables()}
+            </View>
+        );
+    }
 }
 
 const styles = StyleSheet.create({

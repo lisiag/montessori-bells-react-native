@@ -19,7 +19,7 @@ export default function HomeScreen({ navigation }: any) {
                 />
                 <Text
                     style={styles.item}
-                    onPress={() => navigation.navigate("Match")}
+                    onPress={() => navigation.navigate("Match", { level: 1 })}
                 >
                     Match bell
                 </Text>
@@ -28,13 +28,23 @@ export default function HomeScreen({ navigation }: any) {
                     lightColor="#eee"
                     darkColor="rgba(255,255,255,0.1)"
                 />
-                <Text style={styles.item}>Match bells: 3</Text>
+                <Text
+                    style={styles.item}
+                    onPress={() => navigation.navigate("Match", { level: 3 })}
+                >
+                    Match bells: 3
+                </Text>
                 <View
                     style={styles.separator}
                     lightColor="#eee"
                     darkColor="rgba(255,255,255,0.1)"
                 />
-                <Text style={styles.item}>Match bells: octave</Text>
+                <Text
+                    style={styles.item}
+                    onPress={() => navigation.navigate("Match", { level: 8 })}
+                >
+                    Match bells: octave
+                </Text>
                 <View
                     style={styles.separator}
                     lightColor="#eee"
