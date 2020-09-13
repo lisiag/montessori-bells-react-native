@@ -1,3 +1,6 @@
+/** Bells.tsx. Lay out the bells and the other components (toolbars, instructions) required for each
+of the bells activities (match bells, sort bells, make music) **/
+
 import { Audio } from "expo-av";
 import React, { useRef, useState } from "react";
 import {
@@ -37,12 +40,13 @@ export interface BellsProps {
     title: string;
 }
 
+/* Layout the bells and other components required for the bells activities */
 export default function Bells(props: BellsProps) {
     let BELLSIZE = 140;
     let leftRightMargin = 0;
-    /* If we are matching a whole octave of 8 bells, keep the bells small enough so they all fit on
-       the screen because scrolling during the activity detracts from the user experience; and
-       increase the margin on the left and right sides of the screen */
+    /* If the activity displays a whole octave of 8 bells, keep the bells small enough so they all
+       fit on the screen because scrolling during the activity detracts from the user experience;
+       and increase the margin on the left and right sides of the screen for a nicer appearance */
     if (props.numRows == 8) {
         BELLSIZE = (screenHeight - headerHeight() - 40) / 8;
         leftRightMargin = 30;
@@ -54,11 +58,12 @@ export default function Bells(props: BellsProps) {
         (props.numRows + 1) * BELLSIZE
     );
 
+    /* Collections of handlers of touches and gestures by the user */
     let pans: Array<Animated.ValueXY | null> = [];
     let panResponders: Array<PanResponderInstance | null> = [];
 
     /*
-       Get random notes for the bells in the righthand column
+       Get numRows random notes from the scale of C major
      */
     const notes = Util.getRandoms(8, props.numRows);
 
@@ -74,6 +79,7 @@ export default function Bells(props: BellsProps) {
     /* Is the instructions modal displaying? */
     const [modalVisible, setModalVisible] = useState(false);
 
+    /* Sound files */
     const C4 = require("../../assets/sounds/pianoC4.mp3");
     const D4 = require("../../assets/sounds/pianoD4.mp3");
     const E4 = require("../../assets/sounds/pianoE4.mp3");
@@ -84,6 +90,7 @@ export default function Bells(props: BellsProps) {
     const C5 = require("../../assets/sounds/pianoC5.mp3");
     const mp3s = [C4, D4, E4, F4, G4, A4, B4, C5];
 
+    /* Render a fixed bell - a bell that can't be dragged */
     const renderFixed = (rowIdx: number) => {
         return (
             <View
@@ -127,6 +134,7 @@ export default function Bells(props: BellsProps) {
         }
     }
 
+    /* Render a draggable bell - a bell that can be dragged */
     const renderDraggable = (rowIdx: number) => {
         /* If numPairs is 1, only render a draggable at rowIdx 0. If numPairs is greater than 1 (3
            or 8), render a draggable in every row */
@@ -192,6 +200,8 @@ export default function Bells(props: BellsProps) {
         });
     };
 
+    /* The instructions that are displayed in a modal when the user presses the 'instructions'
+       button */
     const instructions = () => {
         let sing_plural: string;
         if (props.numPairs === 1) {
