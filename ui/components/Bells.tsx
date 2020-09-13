@@ -1,5 +1,5 @@
 /** Bells.tsx. Lay out the bells and the other components (toolbars, instructions) required for each
-of the bells activities (match bells, sort bells, make music) **/
+of the bells activities: match bells, sort bells, make music **/
 
 import { Audio } from "expo-av";
 import React, { useRef, useState } from "react";
@@ -29,6 +29,24 @@ const LEFTBOUND = -15;
 const TOPBOUND = -9;
 const RIGHTBOUND = screenWidth + 15;
 
+/* Sound files */
+const mp3s = (() => {
+    const C4 = require("../../assets/sounds/pianoC4.mp3");
+    const D4 = require("../../assets/sounds/pianoD4.mp3");
+    const E4 = require("../../assets/sounds/pianoE4.mp3");
+    const F4 = require("../../assets/sounds/pianoF4.mp3");
+    const G4 = require("../../assets/sounds/pianoG4.mp3");
+    const A4 = require("../../assets/sounds/pianoA4.mp3");
+    const B4 = require("../../assets/sounds/pianoB4.mp3");
+    const C5 = require("../../assets/sounds/pianoC5.mp3");
+    return [C4, D4, E4, F4, G4, A4, B4, C5];
+})();
+
+/* Each time the activity is played, some sound files from 'mp3s' are randomly selected (or all are
+selected in activities where the whole octave is used). The index of each selected 'mp3s' element is
+stored in the 'notes' array */
+let notes: number[] = [];
+
 export interface BellsProps {
     type: string /* Are these bells wanted for a matching activity, sorting activity or making music activity? */;
     numPairs: number /* the number of pairs of bells for user to match; i.e. the number of bells in the lefthand col */;
@@ -36,8 +54,13 @@ export interface BellsProps {
     title: string;
 }
 
-/* Layout the bells and other components required for the bells activities */
+/* Lay out the bells and other components required for the bells activities */
 export default function Bells(props: BellsProps) {
+    /* After the user drags or presses a bell or clicks the 'Instructions' or 'Show answers'
+    buttons, the bells should keep their locations on the screen and their notes. After the user
+    clicks 'Play again', the bells should be reset to their original locations on the screen and
+    given new random notes */
+    const [needsReset, setNeedsReset] = useState({ value: true });
     let BELLSIZE = 140;
     let leftRightMargin = 0;
     /* If the activity displays a whole octave of 8 bells, keep the bells small enough so they all
@@ -61,13 +84,15 @@ export default function Bells(props: BellsProps) {
     let bellTop = TOPSTARTPOS;
 
     /* Collections of handlers of touches and gestures by the user */
-    let pans: Array<Animated.ValueXY | null> = [];
-    let panResponders: Array<PanResponderInstance | null> = [];
+    const pans: Array<Animated.ValueXY | null> = [];
+    const panResponders: Array<PanResponderInstance | null> = [];
 
     /*
        numRows random notes from the scale of C major
      */
-    const notes = Util.getRandoms(8, props.numRows);
+    if (needsReset.value) {
+        notes = Util.getRandoms(8, props.numRows);
+    }
 
     /* Sort bells from high to low for the righthand column */
     const notesSorted = notes.slice().sort().reverse();
@@ -80,19 +105,6 @@ export default function Bells(props: BellsProps) {
 
     /* Is the instructions modal displaying? */
     const [modalVisible, setModalVisible] = useState(false);
-
-    /* Sound files */
-    const C4 = require("../../assets/sounds/pianoC4.mp3");
-    const D4 = require("../../assets/sounds/pianoD4.mp3");
-    const E4 = require("../../assets/sounds/pianoE4.mp3");
-    const F4 = require("../../assets/sounds/pianoF4.mp3");
-    const G4 = require("../../assets/sounds/pianoG4.mp3");
-    const A4 = require("../../assets/sounds/pianoA4.mp3");
-    const B4 = require("../../assets/sounds/pianoB4.mp3");
-    const C5 = require("../../assets/sounds/pianoC5.mp3");
-    const mp3s = [C4, D4, E4, F4, G4, A4, B4, C5];
-
-    const [someState, setSomeState] = useState(0);
 
     /* Render a fixed bell - a bell that can't be dragged */
     const renderFixed = (rowIdx: number) => {
@@ -146,15 +158,19 @@ export default function Bells(props: BellsProps) {
             return;
         }
 
-        const bell = useRef(new Animated.ValueXY());
-
         const x = -11 + leftRightMargin;
 
-        /* Set bell's position every render; otherwise bell retains its previous position when 'Play
-        again' button is pressed */
-        bell.current.setValue({ x, y: TOPSTARTPOS });
+        /* Weirdly, even though this code is reached after user opens and closes 'Instructions'
+        modal, bell keeps the x and y position it has been dragged to (which is the desired
+        behaviour) */
+        const bellXY = useRef(new Animated.ValueXY({ x, y: TOPSTARTPOS }));
 
-        pans.push(bell.current);
+        /* When 'Play again' button is pressed, reset bell's x and y to the start position */
+        if (needsReset.value) {
+            bellXY.current.setValue({ x, y: TOPSTARTPOS });
+        }
+
+        pans.push(bellXY.current);
 
         panResponders.push(
             useRef(
@@ -203,15 +219,15 @@ export default function Bells(props: BellsProps) {
 
     const renderDraggables = () => {
         return rowIndices.map((rowIdx) => {
-            bellTop = TOPSTARTPOS + rowIdx * BELLSIZE;
             return renderDraggable(rowIdx);
         });
     };
 
     const onPlayAgainPress = () => {
-        /* change state so that the component is re-rendered so the bells return to their original
-        positions and a new random collection of notes is generated */
-        setSomeState(someState + 1);
+        /* change state so that the component is re-rendered, and set needsReset to true so the
+           bells return to their original positions and a new random collection of notes is
+           generated */
+        setNeedsReset({ value: true });
     };
 
     /* The instructions that are displayed in a modal when the user presses the 'instructions'
@@ -271,7 +287,7 @@ export default function Bells(props: BellsProps) {
         );
     };
 
-    return (
+    const ret = (
         <View style={{ flex: 1 }}>
             <View style={{ flex: 1 }}>
                 {renderFixedBells()}
@@ -281,6 +297,12 @@ export default function Bells(props: BellsProps) {
             {toolbar()}
         </View>
     );
+
+    /* set needsReset to false so that the bells' notes and positions don't reset after the user
+    drags a bell to a new position or presses the 'Instructions' or 'Show answers' buttons */
+    needsReset.value = false;
+
+    return ret;
 }
 
 const styles = StyleSheet.create({
