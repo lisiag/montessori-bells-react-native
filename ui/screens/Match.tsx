@@ -15,29 +15,7 @@ export default function Match({ route }: any) {
             numRows = 8;
     }
 
-    let sing_plural;
-    if (level === 1) {
-        sing_plural = "Tap each bell to play its note. Drag the ";
-    } else {
-        sing_plural = "Tap each bell to play its note. Drag each ";
-    }
-    const instructions = React.createElement(
-        "div",
-        {},
-        sing_plural,
-        React.createElement("span", { id: "draggableColor" }, "green"),
-        " bell and drop it next to the ",
-        React.createElement("span", { id: "fixedBellColor" }, "blue"),
-        " bell that plays the same note."
-    );
-
     return (
-        <Bells
-            type="match"
-            numPairs={level}
-            numRows={numRows}
-            instructions={instructions}
-            title={title}
-        />
+        <Bells type="match" numPairs={level} numRows={numRows} title={title} />
     );
 }

@@ -1,5 +1,5 @@
 import { Audio } from "expo-av";
-import React, { useRef, DetailedReactHTMLElement, HTMLAttributes } from "react";
+import React, { useRef, useState } from "react";
 import {
     Animated,
     Dimensions,
@@ -7,10 +7,12 @@ import {
     PanResponderInstance,
     StyleSheet,
     TouchableWithoutFeedback,
+    Button,
+    Modal,
 } from "react-native";
 import { Icon } from "react-native-elements";
 import { Util } from "../../business/util";
-import { View, ScrollView } from "../components/Themed";
+import { View, ScrollView, Text } from "../components/Themed";
 
 const BELLSIZE = 140;
 /* the vertical gap between bells before they are dragged */
@@ -34,10 +36,6 @@ export interface BellsProps {
     type: string /* Are these bells wanted for a matching activity, sorting activity or making music activity? */;
     numPairs: number /* the number of pairs of bells for user to match; i.e. the number of bells in the lefthand col */;
     numRows: number /* the number of rows of bells; the number of bells in the righthand column */;
-    instructions: DetailedReactHTMLElement<
-        HTMLAttributes<HTMLElement>,
-        HTMLElement
-    >;
     title: string;
 }
 
@@ -64,6 +62,9 @@ export default function Bells(props: BellsProps) {
     for (let i = 0; i < notes.length; ++i) {
         rowIndices.push(i);
     }
+
+    /* Is the instructions modal displaying? */
+    const [modalVisible, setModalVisible] = useState(false);
 
     const C4 = require("../../assets/sounds/pianoC4.mp3");
     const D4 = require("../../assets/sounds/pianoD4.mp3");
@@ -113,7 +114,7 @@ export default function Bells(props: BellsProps) {
 
     const renderDraggable = (rowIdx: number) => {
         /* If numPairs is 1, only render a draggable at rowIdx 0. If numPairs is greater than 1 (3
-        or 8), render a draggable in every row */
+           or 8), render a draggable in every row */
         if (props.numPairs == 1 && rowIdx != 0) {
             return;
         }
@@ -171,19 +172,81 @@ export default function Bells(props: BellsProps) {
         });
     };
 
+    const instructions = () => {
+        let sing_plural: string;
+        if (props.numPairs === 1) {
+            sing_plural = "Tap each bell to play its note. Drag the ";
+        } else {
+            sing_plural = "Tap each bell to play its note. Drag each ";
+        }
+        return (
+            <Text style={{ padding: 20 }}>
+                <Text>{sing_plural!}</Text>
+                <Text style={{ color: "limegreen" }}>green</Text>
+                <Text> bell and drop it next to the </Text>
+                <Text style={{ color: "dodgerblue" }}>blue</Text>
+                <Text> bell that plays the same note.</Text>
+            </Text>
+        );
+    };
+
+    const instructionsModal = () => {
+        return (
+            <Modal visible={modalVisible}>
+                {instructions()}
+                <View style={styles.button}>
+                    <Button
+                        onPress={() => setModalVisible(false)}
+                        title="Close"
+                        color="#000"
+                    />
+                </View>
+            </Modal>
+        );
+    };
+
+    const toolbar = () => {
+        return (
+            <View style={styles.toolbar}>
+                <Button
+                    onPress={() => alert("This is a button!")}
+                    title="Play again"
+                    color="#000"
+                />
+                <Button
+                    onPress={() => setModalVisible(true)}
+                    title="Instructions"
+                    color="#000"
+                />
+                <Button
+                    onPress={() => alert("This is a button!")}
+                    title="Show answers"
+                    color="#000"
+                />
+            </View>
+        );
+    };
+
     if (props.numPairs == 8) {
         return (
-            <ScrollView style={{ flex: 1 }}>
-                {renderFixedBells()}
-                {renderDraggables()}
-            </ScrollView>
+            <View style={{ flex: 1 }}>
+                <ScrollView style={{ flex: 1 }}>
+                    {renderFixedBells()}
+                    {renderDraggables()}
+                </ScrollView>
+                {toolbar()}
+            </View>
         );
     } else {
         /* only 1 fixed bell displays when numPairs is 1 if ScrollView is used */
         return (
             <View style={{ flex: 1 }}>
-                {renderFixedBells()}
-                {renderDraggables()}
+                <View style={{ flex: 1 }}>
+                    {renderFixedBells()}
+                    {renderDraggables()}
+                </View>
+                {instructionsModal()}
+                {toolbar()}
             </View>
         );
     }
@@ -200,5 +263,16 @@ const styles = StyleSheet.create({
     draggable: {
         width: BELLSIZE,
         height: BELLSIZE,
+    },
+    toolbar: {
+        flexDirection: "row",
+        backgroundColor: "gray",
+        justifyContent: "space-between",
+    },
+    button: {
+        flex: 1,
+        flexDirection: "column",
+        alignItems: "center",
+        marginTop: 10,
     },
 });
