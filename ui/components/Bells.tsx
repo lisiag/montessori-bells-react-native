@@ -12,11 +12,9 @@ import {
 } from "react-native";
 import { Icon } from "react-native-elements";
 import { Util } from "../../business/util";
-import { View, ScrollView, Text } from "../components/Themed";
+import { View, Text } from "../components/Themed";
+import { headerHeight } from "../constants/constants";
 
-const BELLSIZE = 140;
-/* the vertical gap between bells before they are dragged */
-const GAP = 10;
 /* Use the screen width to work out the placement of the bells. In the future, if this app is
    deployed not just for mobile devices but also for web, this will need to be modified so that on a
    larger device such as laptop, the bells placement doesn't use the entire width of the screen but
@@ -40,10 +38,20 @@ export interface BellsProps {
 }
 
 export default function Bells(props: BellsProps) {
+    let BELLSIZE = 140;
+    let leftRightMargin = 0;
+    /* If we are matching a whole octave of 8 bells, keep the bells small enough so they all fit on
+       the screen because scrolling during the activity detracts from the user experience; and
+       increase the margin on the left and right sides of the screen */
+    if (props.numRows == 8) {
+        BELLSIZE = (screenHeight - headerHeight() - 40) / 8;
+        leftRightMargin = 30;
+    }
+
     /* The furthest down a bell can be dragged */
     const BOTTOMBOUND = Math.max(
         screenHeight - BELLSIZE + 30,
-        (props.numRows + 1) * (BELLSIZE + GAP)
+        (props.numRows + 1) * BELLSIZE
     );
 
     let pans: Array<Animated.ValueXY | null> = [];
@@ -78,7 +86,14 @@ export default function Bells(props: BellsProps) {
 
     const renderFixed = (rowIdx: number) => {
         return (
-            <View key={rowIdx} style={[styles.fixedBell, { top: bellTop }]}>
+            <View
+                key={rowIdx}
+                style={{
+                    position: "absolute",
+                    left: screenWidth - (BELLSIZE + leftRightMargin) + 20,
+                    top: bellTop,
+                }}
+            >
                 <TouchableWithoutFeedback
                     onPress={() => {
                         playSound(notesSorted[rowIdx]);
@@ -119,8 +134,10 @@ export default function Bells(props: BellsProps) {
             return;
         }
 
+        const x = -11 + leftRightMargin;
+
         pans.push(
-            useRef(new Animated.ValueXY({ x: -11, y: TOPSTARTPOS })).current
+            useRef(new Animated.ValueXY({ x: x, y: TOPSTARTPOS })).current
         );
         panResponders.push(
             useRef(
@@ -147,7 +164,10 @@ export default function Bells(props: BellsProps) {
         return (
             <Animated.View
                 key={rowIdx}
-                style={[styles.draggable, pans[rowIdx]!.getLayout()]}
+                style={[
+                    { width: BELLSIZE, height: BELLSIZE },
+                    pans[rowIdx]!.getLayout(),
+                ]}
                 {...panResponders[rowIdx]!.panHandlers}
             >
                 <TouchableWithoutFeedback
@@ -227,47 +247,26 @@ export default function Bells(props: BellsProps) {
         );
     };
 
-    if (props.numPairs == 8) {
-        return (
+    return (
+        <View style={{ flex: 1 }}>
             <View style={{ flex: 1 }}>
-                <ScrollView style={{ flex: 1 }}>
-                    {renderFixedBells()}
-                    {renderDraggables()}
-                </ScrollView>
-                {toolbar()}
+                {renderFixedBells()}
+                {renderDraggables()}
             </View>
-        );
-    } else {
-        /* only 1 fixed bell displays when numPairs is 1 if ScrollView is used */
-        return (
-            <View style={{ flex: 1 }}>
-                <View style={{ flex: 1 }}>
-                    {renderFixedBells()}
-                    {renderDraggables()}
-                </View>
-                {instructionsModal()}
-                {toolbar()}
-            </View>
-        );
-    }
+            {instructionsModal()}
+            {toolbar()}
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
-    fixedBell: {
-        position: "absolute",
-        left: screenWidth - (BELLSIZE + GAP) + 20,
-    },
-    draggable: {
-        width: BELLSIZE,
-        height: BELLSIZE,
-    },
     toolbar: {
         flexDirection: "row",
-        backgroundColor: "gray",
         justifyContent: "space-between",
+        marginBottom: 5,
     },
     button: {
         flex: 1,

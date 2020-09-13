@@ -4,13 +4,13 @@ import { Button } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import useCachedResources from "./ui/hooks/useCachedResources";
-import useColorScheme from "./ui/hooks/useColorScheme";
 import "react-native-gesture-handler";
 import { NavigationContainer } from "@react-navigation/native";
 import HomeScreen from "./ui/screens/HomeScreen";
 import AboutScreen from "./ui/screens/AboutScreen";
 import { createStackNavigator } from "@react-navigation/stack";
 import Match from "./ui/screens/Match";
+import { headerHeight } from "./ui/constants/constants";
 
 const Stack = createStackNavigator();
 
@@ -32,7 +32,11 @@ export default function App() {
     } else {
         return (
             <NavigationContainer>
-                <Stack.Navigator>
+                <Stack.Navigator
+                    screenOptions={{
+                        headerStyle: { height: headerHeight() },
+                    }}
+                >
                     <Stack.Screen
                         name="Home"
                         component={HomeScreen}
