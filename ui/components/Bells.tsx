@@ -92,6 +92,8 @@ export default function Bells(props: BellsProps) {
     const C5 = require("../../assets/sounds/pianoC5.mp3");
     const mp3s = [C4, D4, E4, F4, G4, A4, B4, C5];
 
+    const [someState, setSomeState] = useState(0);
+
     /* Render a fixed bell - a bell that can't be dragged */
     const renderFixed = (rowIdx: number) => {
         return (
@@ -144,15 +146,19 @@ export default function Bells(props: BellsProps) {
             return;
         }
 
+        const bell = useRef(new Animated.ValueXY());
+
         const x = -11 + leftRightMargin;
 
-        pans.push(
-            useRef(new Animated.ValueXY({ x: x, y: TOPSTARTPOS })).current
-        );
+        /* Set bell's position every render; otherwise bell retains its previous position when 'Play
+        again' button is pressed */
+        bell.current.setValue({ x, y: TOPSTARTPOS });
+
+        pans.push(bell.current);
+
         panResponders.push(
             useRef(
                 PanResponder.create({
-                    /* onStartShouldSetPanResponder: () => true, */
                     onMoveShouldSetPanResponder: () => true,
                     onPanResponderGrant: () => {
                         pans[rowIdx]!.setOffset({
@@ -202,6 +208,12 @@ export default function Bells(props: BellsProps) {
         });
     };
 
+    const onPlayAgainPress = () => {
+        /* change state so that the component is re-rendered so the bells return to their original
+        positions and a new random collection of notes is generated */
+        setSomeState(someState + 1);
+    };
+
     /* The instructions that are displayed in a modal when the user presses the 'instructions'
        button */
     const instructions = () => {
@@ -241,7 +253,7 @@ export default function Bells(props: BellsProps) {
         return (
             <View style={styles.toolbar}>
                 <Button
-                    onPress={() => alert("This is a button!")}
+                    onPress={onPlayAgainPress}
                     title="Play again"
                     color="#000"
                 />
