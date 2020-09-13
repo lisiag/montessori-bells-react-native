@@ -165,8 +165,11 @@ export default function Bells(props: BellsProps) {
         const x = -11 + leftRightMargin;
 
         /* Weirdly, even though this code is reached after user opens and closes 'Instructions'
-        modal, bell keeps the x and y position it has been dragged to (which is the desired
-        behaviour) */
+        modal, and 'pans' is emptied and repopulated, somehow it is repopulated with bellXY elements
+        that keep the previous bellXY elements' layout - they don't get reset with the original pos
+        (-11, TOPSTARTPOS) here. This magic is fortunate, as keeping the prev bells' layout is the
+        desired behaviour in that case. It may be to do with React Native's use of "slots"; perhaps
+        useRef *sets* the first time it is called, and *gets* on subsequent calls? */
         const bellXY = useRef(new Animated.ValueXY({ x, y: TOPSTARTPOS }));
 
         /* When 'Play again' button is pressed, reset bell's x and y to the start position */
