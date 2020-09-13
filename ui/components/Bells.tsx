@@ -24,10 +24,6 @@ import { headerHeight } from "../constants/constants";
    only a portion in the centre */
 const screenWidth = Math.round(Dimensions.get("window").width);
 const screenHeight = Math.round(Dimensions.get("window").height);
-/* The position of top for the top bell in each column */
-const TOPSTARTPOS = -5;
-/* The position of top for the current bell being drawn */
-let bellTop = TOPSTARTPOS;
 /* The furthest left/up/right a bell can be dragged */
 const LEFTBOUND = -15;
 const TOPBOUND = -9;
@@ -58,12 +54,18 @@ export default function Bells(props: BellsProps) {
         (props.numRows + 1) * BELLSIZE
     );
 
+    /* The position of top for the top bell in each column */
+    const TOPSTARTPOS = -5;
+
+    /* The position of top for the current bell being drawn */
+    let bellTop = TOPSTARTPOS;
+
     /* Collections of handlers of touches and gestures by the user */
     let pans: Array<Animated.ValueXY | null> = [];
     let panResponders: Array<PanResponderInstance | null> = [];
 
     /*
-       Get numRows random notes from the scale of C major
+       numRows random notes from the scale of C major
      */
     const notes = Util.getRandoms(8, props.numRows);
 
