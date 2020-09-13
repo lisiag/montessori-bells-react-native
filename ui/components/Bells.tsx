@@ -61,6 +61,13 @@ export default function Bells(props: BellsProps) {
     clicks 'Play again', the bells should be reset to their original locations on the screen and
     given new random notes */
     const [needsReset, setNeedsReset] = useState({ value: true });
+
+    /* Is the instructions modal displaying? */
+    const [modalVisible, setModalVisible] = useState(false);
+
+    /* Are the coloured borders indicating answers showing? */
+    const [answersShowing, setAnswersShowing] = useState(false);
+
     let BELLSIZE = 140;
     let leftRightMargin = 0;
     /* If the activity displays a whole octave of 8 bells, keep the bells small enough so they all
@@ -103,9 +110,6 @@ export default function Bells(props: BellsProps) {
         rowIndices.push(i);
     }
 
-    /* Is the instructions modal displaying? */
-    const [modalVisible, setModalVisible] = useState(false);
-
     /* Render a fixed bell - a bell that can't be dragged */
     const renderFixed = (rowIdx: number) => {
         return (
@@ -124,7 +128,7 @@ export default function Bells(props: BellsProps) {
                 >
                     <Icon
                         name="notifications"
-                        color="dodgerblue"
+                        color={answersShowing ? "red" : "dodgerblue"}
                         size={BELLSIZE}
                     />
                 </TouchableWithoutFeedback>
@@ -265,6 +269,10 @@ export default function Bells(props: BellsProps) {
         );
     };
 
+    const onShowAnswersPress = () => {
+        setAnswersShowing(true);
+    };
+
     const toolbar = () => {
         return (
             <View style={styles.toolbar}>
@@ -279,7 +287,7 @@ export default function Bells(props: BellsProps) {
                     color="#000"
                 />
                 <Button
-                    onPress={() => alert("This is a button!")}
+                    onPress={onShowAnswersPress}
                     title="Show answers"
                     color="#000"
                 />
