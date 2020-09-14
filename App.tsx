@@ -1,7 +1,5 @@
-import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { Button } from "react-native";
-import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import useCachedResources from "./ui/hooks/useCachedResources";
 import "react-native-gesture-handler";
@@ -10,6 +8,7 @@ import HomeScreen from "./ui/screens/HomeScreen";
 import AboutScreen from "./ui/screens/AboutScreen";
 import { createStackNavigator } from "@react-navigation/stack";
 import Match from "./ui/screens/Match";
+import MakeMusic from "./ui/screens/MakeMusic";
 import { headerHeight } from "./ui/constants/constants";
 
 const Stack = createStackNavigator();
@@ -58,6 +57,14 @@ export default function App() {
                         component={Match}
                         options={{
                             title: "Pair the matching bells",
+                            headerRight: loginButton,
+                        }}
+                    />
+                    <Stack.Screen
+                        name="MakeMusic"
+                        component={MakeMusic}
+                        options={{
+                            title: "Make music",
                             headerRight: loginButton,
                         }}
                     />

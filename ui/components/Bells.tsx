@@ -69,6 +69,9 @@ export interface BellsProps {
 
 /* Lay out the bells and other components required for the bells activities */
 export default function Bells(props: BellsProps) {
+    if ((props.type = "makeMusic")) {
+        return <Text>This is the Make music screen.</Text>;
+    }
     /* After the user drags or presses a bell or clicks the 'Instructions' or 'Show answers'
     buttons, the bells should keep their locations on the screen and their notes. After the user
     clicks 'Play again', the bells should be reset to their original locations on the screen and

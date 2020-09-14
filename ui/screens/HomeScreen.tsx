@@ -50,7 +50,12 @@ export default function HomeScreen({ navigation }: any) {
                     lightColor="#eee"
                     darkColor="rgba(255,255,255,0.1)"
                 />
-                <Text style={styles.item}>Make music</Text>
+                <Text
+                    style={styles.item}
+                    onPress={() => navigation.navigate("MakeMusic")}
+                >
+                    Make music
+                </Text>
                 <View
                     style={styles.separator}
                     lightColor="#eee"
