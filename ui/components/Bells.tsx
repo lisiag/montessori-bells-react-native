@@ -42,6 +42,19 @@ const mp3s = (() => {
     return [C4, D4, E4, F4, G4, A4, B4, C5];
 })();
 
+/* Eight colors used to correspond to the eight notes. Used to color the bells when the user
+   clicks "Show answers" so bells with the same note have the same color */
+const answerColors = [
+    "lightseagreen",
+    "gold",
+    "blue",
+    "red",
+    "blueviolet",
+    "deepskyblue",
+    "darkorange",
+    "magenta",
+];
+
 /* Each time the activity is played, some sound files from 'mp3s' are randomly selected (or all are
 selected in activities where the whole octave is used). The index of each selected 'mp3s' element is
 stored in the 'notes' array */
@@ -65,7 +78,7 @@ export default function Bells(props: BellsProps) {
     /* Is the instructions modal displaying? */
     const [modalVisible, setModalVisible] = useState(false);
 
-    /* Are the coloured borders indicating answers showing? */
+    /* Are the colored borders indicating answers showing? */
     const [answersShowing, setAnswersShowing] = useState(false);
 
     let BELLSIZE = 140;
@@ -128,7 +141,11 @@ export default function Bells(props: BellsProps) {
                 >
                     <Icon
                         name="notifications"
-                        color={answersShowing ? "red" : "dodgerblue"}
+                        color={
+                            answersShowing
+                                ? answerColors[notesSorted[rowIdx]]
+                                : "dodgerblue"
+                        }
                         size={BELLSIZE}
                     />
                 </TouchableWithoutFeedback>
@@ -216,7 +233,11 @@ export default function Bells(props: BellsProps) {
                 >
                     <Icon
                         name="notifications"
-                        color="limegreen"
+                        color={
+                            answersShowing
+                                ? answerColors[notes[rowIdx]]
+                                : "limegreen"
+                        }
                         size={BELLSIZE}
                     />
                 </TouchableWithoutFeedback>
@@ -228,13 +249,6 @@ export default function Bells(props: BellsProps) {
         return rowIndices.map((rowIdx) => {
             return renderDraggable(rowIdx);
         });
-    };
-
-    const onPlayAgainPress = () => {
-        /* change state so that the component is re-rendered, and set needsReset to true so the
-           bells return to their original positions and a new random collection of notes is
-           generated */
-        setNeedsReset({ value: true });
     };
 
     /* The instructions that are displayed in a modal when the user presses the 'instructions'
@@ -257,23 +271,28 @@ export default function Bells(props: BellsProps) {
         );
     };
 
+    const onModalClose = () => {
+        setAnswersShowing(false);
+        setModalVisible(false);
+    };
+
     const instructionsModal = () => {
         return (
             <Modal visible={modalVisible}>
                 {instructions()}
                 <View style={styles.button}>
-                    <Button
-                        onPress={() => setModalVisible(false)}
-                        title="Close"
-                        color="#000"
-                    />
+                    <Button onPress={onModalClose} title="Close" color="#000" />
                 </View>
             </Modal>
         );
     };
 
-    const onShowAnswersPress = () => {
-        setAnswersShowing(true);
+    const onPlayAgainPress = () => {
+        setAnswersShowing(false);
+        /* change state so that the component is re-rendered, and set needsReset to true so the
+           bells return to their original positions and a new random collection of notes is
+           generated */
+        setNeedsReset({ value: true });
     };
 
     const toolbar = () => {
@@ -290,8 +309,8 @@ export default function Bells(props: BellsProps) {
                     color="#000"
                 />
                 <Button
-                    onPress={onShowAnswersPress}
-                    title="Show answers"
+                    onPress={() => setAnswersShowing(!answersShowing)}
+                    title={answersShowing ? "Hide answers" : "Show answers"}
                     color="#000"
                 />
             </View>
