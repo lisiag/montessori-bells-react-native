@@ -69,9 +69,6 @@ export interface BellsProps {
 
 /* Lay out the bells and other components required for the bells activities */
 export default function Bells(props: BellsProps) {
-    if ((props.type = "makeMusic")) {
-        return <Text>This is the Make music screen.</Text>;
-    }
     /* After the user drags or presses a bell or clicks the 'Instructions' or 'Show answers'
     buttons, the bells should keep their locations on the screen and their notes. After the user
     clicks 'Play again', the bells should be reset to their original locations on the screen and
@@ -320,16 +317,28 @@ export default function Bells(props: BellsProps) {
         );
     };
 
-    const ret = (
-        <View style={{ flex: 1 }}>
+    let ret;
+
+    if (props.type === "match") {
+        ret = (
             <View style={{ flex: 1 }}>
-                {renderFixedBells()}
-                {renderDraggables()}
+                <View style={{ flex: 1 }}>
+                    {renderFixedBells()}
+                    {renderDraggables()}
+                </View>
+                {instructionsModal()}
+                {toolbar()}
             </View>
-            {instructionsModal()}
-            {toolbar()}
-        </View>
-    );
+        );
+    } else {
+        ret = (
+            <View style={{ flex: 1 }}>
+                <View style={{ flex: 1 }}>{renderFixedBells()}</View>
+                {instructionsModal()}
+                {toolbar()}
+            </View>
+        );
+    }
 
     /* set needsReset to false so that the bells' notes and positions don't reset after the user
     drags a bell to a new position or presses the 'Instructions' or 'Show answers' buttons */
