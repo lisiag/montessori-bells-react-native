@@ -10,20 +10,11 @@ import { createStackNavigator } from "@react-navigation/stack";
 import Match from "./ui/screens/Match";
 import MakeMusic from "./ui/screens/MakeMusic";
 import Login from "./ui/screens/Login";
+import LoginButton from "./ui/components/LoginButton";
 import ProfileScreen from "./ui/screens/ProfileScreen";
 import { headerHeight } from "./ui/constants/constants";
 
 const Stack = createStackNavigator();
-
-const loginButton = (navigation: any) => {
-    return (
-        <Button
-            title="Login"
-            color="#000"
-            onPress={() => navigation.navigate("Login")}
-        />
-    );
-};
 
 export default function App() {
     const isLoadingComplete = useCachedResources();
@@ -43,7 +34,7 @@ export default function App() {
                         component={HomeScreen}
                         options={({ navigation }) => ({
                             title: "Home",
-                            headerRight: () => loginButton(navigation),
+                            headerRight: () => LoginButton(navigation),
                         })}
                     />
                     <Stack.Screen
@@ -51,7 +42,7 @@ export default function App() {
                         component={AboutScreen}
                         options={({ navigation }) => ({
                             title: "About",
-                            headerRight: () => loginButton(navigation),
+                            headerRight: () => LoginButton(navigation),
                         })}
                     />
                     <Stack.Screen
@@ -59,7 +50,7 @@ export default function App() {
                         component={Match}
                         options={({ navigation }) => ({
                             title: "Pair the matching bells",
-                            headerRight: () => loginButton(navigation),
+                            headerRight: () => LoginButton(navigation),
                         })}
                     />
                     <Stack.Screen
@@ -67,7 +58,7 @@ export default function App() {
                         component={MakeMusic}
                         options={({ navigation }) => ({
                             title: "Make music",
-                            headerRight: () => loginButton(navigation),
+                            headerRight: () => LoginButton(navigation),
                         })}
                     />
                     <Stack.Screen
