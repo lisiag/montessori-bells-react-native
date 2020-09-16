@@ -15,12 +15,12 @@ import { headerHeight } from "./ui/constants/constants";
 
 const Stack = createStackNavigator();
 
-const loginButton = () => {
+const loginButton = (navigation: any) => {
     return (
         <Button
-            onPress={() => alert("This is a button!")}
             title="Login"
             color="#000"
+            onPress={() => navigation.navigate("Login")}
         />
     );
 };
@@ -41,34 +41,34 @@ export default function App() {
                     <Stack.Screen
                         name="Home"
                         component={HomeScreen}
-                        options={{
+                        options={({ navigation }) => ({
                             title: "Home",
-                            headerRight: loginButton,
-                        }}
+                            headerRight: () => loginButton(navigation),
+                        })}
                     />
                     <Stack.Screen
                         name="About"
                         component={AboutScreen}
-                        options={{
+                        options={({ navigation }) => ({
                             title: "About",
-                            headerRight: loginButton,
-                        }}
+                            headerRight: () => loginButton(navigation),
+                        })}
                     />
                     <Stack.Screen
                         name="Match"
                         component={Match}
-                        options={{
+                        options={({ navigation }) => ({
                             title: "Pair the matching bells",
-                            headerRight: loginButton,
-                        }}
+                            headerRight: () => loginButton(navigation),
+                        })}
                     />
                     <Stack.Screen
                         name="MakeMusic"
                         component={MakeMusic}
-                        options={{
+                        options={({ navigation }) => ({
                             title: "Make music",
-                            headerRight: loginButton,
-                        }}
+                            headerRight: () => loginButton(navigation),
+                        })}
                     />
                     <Stack.Screen
                         name="Login"
