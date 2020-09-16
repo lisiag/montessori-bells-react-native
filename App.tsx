@@ -9,6 +9,7 @@ import AboutScreen from "./ui/screens/AboutScreen";
 import { createStackNavigator } from "@react-navigation/stack";
 import Match from "./ui/screens/Match";
 import MakeMusic from "./ui/screens/MakeMusic";
+import Login from "./ui/screens/Login";
 import { headerHeight } from "./ui/constants/constants";
 
 const Stack = createStackNavigator();
@@ -66,6 +67,13 @@ export default function App() {
                         options={{
                             title: "Make music",
                             headerRight: loginButton,
+                        }}
+                    />
+                    <Stack.Screen
+                        name="Login"
+                        component={Login}
+                        options={{
+                            title: "Log in",
                         }}
                     />
                 </Stack.Navigator>
