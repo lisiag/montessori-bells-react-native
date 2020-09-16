@@ -16,9 +16,7 @@ export default class LoginScreen extends Component<any> {
 
             if (result.type === "success") {
                 console.log("LoginScreen.js.js 21 | ", result.user.givenName);
-                this.props.navigation.navigate("Profile", {
-                    username: result.user.givenName,
-                }); //after Google login redirect to Profile
+                this.props.navigation.navigate("Profile"); //after Google login redirect to Profile
                 return result.accessToken;
             } else {
                 console.log(`DEBUG cancelled`);
