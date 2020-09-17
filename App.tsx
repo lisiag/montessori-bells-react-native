@@ -50,7 +50,13 @@ export default function App() {
                     {stackScreen("About", AboutScreen)}
                     {stackScreen("Match", Match, "Pair the matching bells")}
                     {stackScreen("MakeMusic", MakeMusic, "Make music")}
-                    {stackScreen("Login", Login, "Log in")}
+                    <Stack.Screen
+                        name="Login"
+                        component={Login}
+                        options={{
+                            title: "Log in",
+                        }}
+                    />
                 </Stack.Navigator>
             </NavigationContainer>
         );
