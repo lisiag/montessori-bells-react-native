@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { Button } from "react-native";
+import { Picker } from "@react-native-community/picker";
+
 import { Text, View } from "../components/Themed";
 import { getUserName } from "../../business/UserBus";
 
@@ -11,18 +13,18 @@ export default function LoginButton(
     let userName = getUserName();
 
     if (userName != null) {
-        if (logoutShowing) {
-            return (
-                <View>
-                    <Text>{userName}</Text>
-                    <Text>Log out</Text>
-                </View>
-            );
-        } else {
-            return (
-                <Text onPress={() => setLogoutShowing(true)}>{userName}</Text>
-            );
-        }
+        return (
+            <Picker
+                selectedValue={userName}
+                style={{ height: 50, width: 100 }}
+                onValueChange={(itemValue, itemIndex) => {
+                    console.log(`user wants to log out`);
+                }}
+            >
+                <Picker.Item label={userName} value={userName} />
+                <Picker.Item label="Logout" value="logout" />
+            </Picker>
+        );
     } else {
         return (
             <Button
