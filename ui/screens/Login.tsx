@@ -5,14 +5,13 @@ import { signIn, getUserName } from "../../business/UserBus";
 async function handlePress(navigation: any) {
     const signedIn = await signIn();
     if (signedIn) {
-        let welcomeMsg = "Welcome, " + getUserName();
+        let welcomeMsg = "Haere mai, " + getUserName();
         ToastAndroid.showWithGravity(
             welcomeMsg,
             ToastAndroid.LONG,
             ToastAndroid.TOP
         );
         navigation.navigate("Home"); //after Google login redirect to Home screen
-    } else {
     }
 }
 

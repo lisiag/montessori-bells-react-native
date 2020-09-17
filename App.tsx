@@ -1,22 +1,22 @@
-import React, { useState } from "react";
-import useCachedResources from "./ui/hooks/useCachedResources";
-import "react-native-gesture-handler";
 import { NavigationContainer } from "@react-navigation/native";
-import HomeScreen from "./ui/screens/HomeScreen";
-import AboutScreen from "./ui/screens/AboutScreen";
 import { createStackNavigator } from "@react-navigation/stack";
-import Match from "./ui/screens/Match";
-import MakeMusic from "./ui/screens/MakeMusic";
-import Login from "./ui/screens/Login";
-import LoginButton from "./ui/components/LoginButton";
+import React from "react";
+import "react-native-gesture-handler";
+import createHeaderRight from "./ui/components/LoginButton";
 import { headerHeight } from "./ui/constants/constants";
+import useCachedResources from "./ui/hooks/useCachedResources";
+import AboutScreen from "./ui/screens/AboutScreen";
+import HomeScreen from "./ui/screens/HomeScreen";
+import Login from "./ui/screens/Login";
+import MakeMusic from "./ui/screens/MakeMusic";
+import Match from "./ui/screens/Match";
 
 const Stack = createStackNavigator();
 
 export default function App() {
     const isLoadingComplete = useCachedResources();
 
-    const [logoutShowing, setLogoutShowing] = useState(false);
+    const headerRight = createHeaderRight();
 
     const stackScreen = (name: string, component: any, title = name) => {
         return (
@@ -25,12 +25,7 @@ export default function App() {
                 component={component}
                 options={({ navigation }) => ({
                     title,
-                    headerRight: () =>
-                        LoginButton(
-                            navigation,
-                            logoutShowing,
-                            setLogoutShowing
-                        ),
+                    headerRight: () => headerRight(navigation),
                 })}
             />
         );

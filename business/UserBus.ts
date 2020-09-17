@@ -1,4 +1,8 @@
-import { signInWithGoogle, userName } from "../data/UserData";
+import {
+    signInWithGoogle,
+    userName,
+    signOutWithGoogle,
+} from "../data/UserData";
 
 export async function signIn() {
     return await signInWithGoogle();
@@ -6,4 +10,8 @@ export async function signIn() {
 
 export function getUserName() {
     return userName;
+}
+
+export async function logout() {
+    return await signOutWithGoogle();
 }

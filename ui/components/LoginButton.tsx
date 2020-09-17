@@ -1,83 +1,52 @@
-import React, { useState } from "react";
-import { Button } from "react-native";
+import React, { useState, ReactText } from "react";
+import { Button, ToastAndroid } from "react-native";
 import { Picker } from "@react-native-community/picker";
+import { getUserName, logout } from "../../business/UserBus";
 
-import { Text, View } from "../components/Themed";
-import { getUserName } from "../../business/UserBus";
+export default function createHeaderRight() {
+    const [headerState, setHeaderState] = useState(false);
+    const [pickerVal, setPickerVal] = useState("");
 
-export default function LoginButton(
-    navigation: any,
-    logoutShowing: boolean,
-    setLogoutShowing: (v: boolean) => void
-) {
-    let userName = getUserName();
-
-    if (userName != null) {
-        return (
-            <Picker
-                selectedValue={userName}
-                style={{ height: 50, width: 100 }}
-                onValueChange={(itemValue, itemIndex) => {
-                    console.log(`user wants to log out`);
-                }}
-            >
-                <Picker.Item label={userName} value={userName} />
-                <Picker.Item label="Logout" value="logout" />
-            </Picker>
-        );
-    } else {
-        return (
-            <Button
-                onPress={() => navigation.navigate("Login")}
-                title="Login"
-                color="#000"
-            />
-        );
+    async function handleLogout(itemValue: ReactText) {
+        if (itemValue === "logout") {
+            const loggedOut = await logout();
+            if (loggedOut) {
+                /* change state on the outer header component so that it is re-rendered */
+                setHeaderState(!headerState);
+                ToastAndroid.showWithGravity(
+                    "Haere ra. You are logged out.",
+                    ToastAndroid.LONG,
+                    ToastAndroid.TOP
+                );
+            }
+        }
     }
-}
 
-/* export interface LoginButtonProps {
- *     navigation: any;
- * }
- *
- * type MyState = { logoutShowing: boolean };
- *
- * export class LoginButton extends Component<LoginButtonProps, MyState> {
- *     userName!: string | undefined;
- *
- *     constructor(props: any) {
- *         super(props);
- *         // Don't call this.setState() here!
- *         this.state = { logoutShowing: false };
- *         this.userName = getUserName();
- *     }
- *
- *     render() {
- *         if (this.userName != null) {
- *             if (this.state.logoutShowing) {
- *                 return (
- *                     <View>
- *                         <Text>{this.userName}</Text>
- *                         <Text>Log out</Text>
- *                     </View>
- *                 );
- *             } else {
- *                 return (
- *                     <Text
- *                         onPress={() => this.setState({ logoutShowing: true })}
- *                     >
- *                         {this.userName}
- *                     </Text>
- *                 );
- *             }
- *         } else {
- *             return (
- *                 <Button
- *                     onPress={() => this.props.navigation.navigate("Login")}
- *                     title="Login"
- *                     color="#000"
- *                 />
- *             );
- *         }
- *     }
- * } */
+    return (navigation: any) => {
+        let userName = getUserName();
+
+        if (userName != null) {
+            setPickerVal(userName);
+            return (
+                <Picker
+                    selectedValue={pickerVal}
+                    style={{ height: 50, width: 100 }}
+                    onValueChange={(itemValue) => {
+                        handleLogout(itemValue);
+                    }}
+                >
+                    <Picker.Item label={userName} value={userName} />
+                    <Picker.Item label="Logout" value="logout" />
+                </Picker>
+            );
+        } else {
+            return (
+                <Button
+                    onPress={() => navigation.navigate("Login")}
+                    title="Login"
+                    color="#000"
+                />
+            );
+        }
+    };
+}
