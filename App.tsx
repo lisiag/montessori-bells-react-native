@@ -2,7 +2,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import React from "react";
 import "react-native-gesture-handler";
-import createHeaderRight from "./ui/components/LoginButton";
+import createHeaderRight from "./ui/components/HeaderRight";
 import { headerHeight } from "./ui/constants/constants";
 import useCachedResources from "./ui/hooks/useCachedResources";
 import AboutScreen from "./ui/screens/AboutScreen";

@@ -11,7 +11,7 @@ export default function createHeaderRight() {
         if (itemValue === "logout") {
             const loggedOut = await logout();
             if (loggedOut) {
-                /* change state on the outer header component so that it is re-rendered */
+                /* change my state so that I am re-rendered */
                 setHeaderState(!headerState);
                 ToastAndroid.showWithGravity(
                     "Haere ra. You are logged out.",
