@@ -1,11 +1,17 @@
-import React, { Component } from "react";
-import { View, StyleSheet, Button } from "react-native";
-import { signIn } from "../../business/UserBus";
+import React from "react";
+import { View, StyleSheet, Button, ToastAndroid } from "react-native";
+import { signIn, getUserName } from "../../business/UserBus";
 
 async function handlePress(navigation: any) {
     const signedIn = await signIn();
     if (signedIn) {
-        navigation.navigate("Profile"); //after Google login redirect to Profile
+        let welcomeMsg = "Welcome, " + getUserName();
+        ToastAndroid.showWithGravity(
+            welcomeMsg,
+            ToastAndroid.LONG,
+            ToastAndroid.TOP
+        );
+        navigation.navigate("Home"); //after Google login redirect to Home screen
     } else {
     }
 }

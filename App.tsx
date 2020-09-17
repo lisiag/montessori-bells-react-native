@@ -11,7 +11,6 @@ import Match from "./ui/screens/Match";
 import MakeMusic from "./ui/screens/MakeMusic";
 import Login from "./ui/screens/Login";
 import LoginButton from "./ui/components/LoginButton";
-import ProfileScreen from "./ui/screens/ProfileScreen";
 import { headerHeight } from "./ui/constants/constants";
 
 const Stack = createStackNavigator();
@@ -66,13 +65,6 @@ export default function App() {
                         component={Login}
                         options={{
                             title: "Log in",
-                        }}
-                    />
-                    <Stack.Screen
-                        name="Profile"
-                        component={ProfileScreen}
-                        options={{
-                            title: "Profile",
                         }}
                     />
                 </Stack.Navigator>
