@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import useCachedResources from "./ui/hooks/useCachedResources";
 import "react-native-gesture-handler";
 import { NavigationContainer } from "@react-navigation/native";
@@ -16,6 +16,26 @@ const Stack = createStackNavigator();
 export default function App() {
     const isLoadingComplete = useCachedResources();
 
+    const [logoutShowing, setLogoutShowing] = useState(false);
+
+    const stackScreen = (name: string, component: any, title = name) => {
+        return (
+            <Stack.Screen
+                name={name}
+                component={component}
+                options={({ navigation }) => ({
+                    title,
+                    headerRight: () =>
+                        LoginButton(
+                            navigation,
+                            logoutShowing,
+                            setLogoutShowing
+                        ),
+                })}
+            />
+        );
+    };
+
     if (!isLoadingComplete) {
         return null;
     } else {
@@ -26,45 +46,11 @@ export default function App() {
                         headerStyle: { height: headerHeight() },
                     }}
                 >
-                    <Stack.Screen
-                        name="Home"
-                        component={HomeScreen}
-                        options={({ navigation }) => ({
-                            title: "Home",
-                            headerRight: () => LoginButton(navigation),
-                        })}
-                    />
-                    <Stack.Screen
-                        name="About"
-                        component={AboutScreen}
-                        options={({ navigation }) => ({
-                            title: "About",
-                            headerRight: () => LoginButton(navigation),
-                        })}
-                    />
-                    <Stack.Screen
-                        name="Match"
-                        component={Match}
-                        options={({ navigation }) => ({
-                            title: "Pair the matching bells",
-                            headerRight: () => LoginButton(navigation),
-                        })}
-                    />
-                    <Stack.Screen
-                        name="MakeMusic"
-                        component={MakeMusic}
-                        options={({ navigation }) => ({
-                            title: "Make music",
-                            headerRight: () => LoginButton(navigation),
-                        })}
-                    />
-                    <Stack.Screen
-                        name="Login"
-                        component={Login}
-                        options={{
-                            title: "Log in",
-                        }}
-                    />
+                    {stackScreen("Home", HomeScreen)}
+                    {stackScreen("About", AboutScreen)}
+                    {stackScreen("Match", Match, "Pair the matching bells")}
+                    {stackScreen("MakeMusic", MakeMusic, "Make music")}
+                    {stackScreen("Login", Login, "Log in")}
                 </Stack.Navigator>
             </NavigationContainer>
         );
