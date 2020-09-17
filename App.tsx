@@ -1,6 +1,4 @@
 import React from "react";
-import { Button } from "react-native";
-
 import useCachedResources from "./ui/hooks/useCachedResources";
 import "react-native-gesture-handler";
 import { NavigationContainer } from "@react-navigation/native";
