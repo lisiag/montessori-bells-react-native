@@ -12,12 +12,14 @@ import {
     TouchableWithoutFeedback,
     Button,
     Modal,
+    ToastAndroid,
 } from "react-native";
 import { Icon } from "react-native-elements";
 import { Util } from "../../business/util";
 import { View, Text } from "../components/Themed";
 import { headerHeight } from "../constants/constants";
 import { notifyNoteListener } from "../../business/note";
+import { NoteTime } from "../../business/song";
 
 // FIXME example mock code for recording song
 /*
@@ -82,9 +84,9 @@ export interface BellsProps {
 /* Lay out the bells and other components required for the bells activities */
 export default function Bells(props: BellsProps) {
     /* After the user drags or presses a bell or clicks the 'Instructions' or 'Show answers'
-    buttons, the bells should keep their locations on the screen and their notes. After the user
-    clicks 'Play again', the bells should be reset to their original locations on the screen and
-    given new random notes */
+       buttons, the bells should keep their locations on the screen and their notes. After the user
+       clicks 'Play again', the bells should be reset to their original locations on the screen and
+       given new random notes */
     const [needsReset, setNeedsReset] = useState({ value: true });
 
     /* Is the instructions modal displaying? */
@@ -92,6 +94,9 @@ export default function Bells(props: BellsProps) {
 
     /* Are the colored borders indicating answers showing? */
     const [answersShowing, setAnswersShowing] = useState(false);
+
+    /* In the 'Make music' activity, is the app recording the music the user is making? */
+    const [isRecording, setIsRecording] = useState(false);
 
     let BELLSIZE = 140;
     let leftRightMargin = 0;
@@ -134,6 +139,9 @@ export default function Bells(props: BellsProps) {
     for (let i = 0; i < notes.length; ++i) {
         rowIndices.push(i);
     }
+
+    /* set up for recording the user's song in 'Make music' activity */
+    let song: NoteTime[] = [];
 
     /* Render a fixed bell - a bell that can't be dragged */
     const renderFixed = (rowIdx: number) => {
@@ -195,11 +203,11 @@ export default function Bells(props: BellsProps) {
         const x = -11 + leftRightMargin;
 
         /* Weirdly, even though this code is reached after user opens and closes 'Instructions'
-        modal, and 'pans' is emptied and repopulated, somehow it is repopulated with bellXY elements
-        that keep the previous bellXY elements' layout - they don't get reset with the original pos
-        (-11, TOPSTARTPOS) here. This magic is fortunate, as keeping the prev bells' layout is the
-        desired behaviour in that case. It may be to do with React Native's use of "slots"; perhaps
-        useRef *sets* the first time it is called, and *gets* on subsequent calls? */
+           modal, and 'pans' is emptied and repopulated, somehow it is repopulated with bellXY elements
+           that keep the previous bellXY elements' layout - they don't get reset with the original pos
+           (-11, TOPSTARTPOS) here. This magic is fortunate, as keeping the prev bells' layout is the
+           desired behaviour in that case. It may be to do with React Native's use of "slots"; perhaps
+           useRef *sets* the first time it is called, and *gets* on subsequent calls? */
         const bellXY = useRef(new Animated.ValueXY({ x, y: TOPSTARTPOS }));
 
         /* When 'Play again' button is pressed, reset bell's x and y to the start position */
@@ -308,9 +316,35 @@ export default function Bells(props: BellsProps) {
         setNeedsReset({ value: true });
     };
 
-    const toolbar = () => {
+    const showToastWithGravity = (message: string) => {
+        ToastAndroid.showWithGravity(
+            message,
+            ToastAndroid.LONG,
+            ToastAndroid.TOP
+        );
+    };
+
+    const record = () => {};
+
+    async function handleRecordButtonPress() {
+        if (!isRecording) {
+            /* start recording */
+            /* record song */
+            record();
+            showToastWithGravity("Recording");
+        } else {
+            /* Stop recording */
+            showToastWithGravity("Recording finished");
+            /* Save recording */
+            /* Clear recording ready for user's next song */
+            song = [];
+        }
+        setIsRecording(!isRecording);
+    }
+
+    const matchToolbar = () => {
         return (
-            <View style={styles.toolbar}>
+            <View style={styles.matchToolbar}>
                 <Button
                     onPress={onPlayAgainPress}
                     title="Play again"
@@ -330,6 +364,24 @@ export default function Bells(props: BellsProps) {
         );
     };
 
+    const makeMusicToolbar = () => {
+        /* type is "makeMusic" */
+        return (
+            <View style={styles.makeMusicToolbar}>
+                <Button
+                    onPress={() => handleRecordButtonPress()}
+                    title={isRecording ? "Stop" : "Record"}
+                    color="#000"
+                />
+                <Button
+                    onPress={() => setModalVisible(true)}
+                    title="Instructions"
+                    color="#000"
+                />
+            </View>
+        );
+    };
+
     let ret;
 
     if (props.type === "match") {
@@ -340,7 +392,7 @@ export default function Bells(props: BellsProps) {
                     {renderDraggables()}
                 </View>
                 {instructionsModal()}
-                {toolbar()}
+                {matchToolbar()}
             </View>
         );
     } else {
@@ -348,13 +400,13 @@ export default function Bells(props: BellsProps) {
             <View style={{ flex: 1 }}>
                 <View style={{ flex: 1 }}>{renderFixedBells()}</View>
                 {instructionsModal()}
-                {toolbar()}
+                {makeMusicToolbar()}
             </View>
         );
     }
 
     /* set needsReset to false so that the bells' notes and positions don't reset after the user
-    drags a bell to a new position or presses the 'Instructions' or 'Show answers' buttons */
+       drags a bell to a new position or presses the 'Instructions' or 'Show answers' buttons */
     needsReset.value = false;
 
     return ret;
@@ -364,9 +416,14 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
-    toolbar: {
+    matchToolbar: {
         flexDirection: "row",
         justifyContent: "space-between",
+        marginBottom: 5,
+    },
+    makeMusicToolbar: {
+        flexDirection: "row",
+        justifyContent: "space-around",
         marginBottom: 5,
     },
     button: {
