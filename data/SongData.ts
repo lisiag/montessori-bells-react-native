@@ -1,73 +1,112 @@
 import { setSongDB, NoteTime } from "../business/song";
-import { observeLogin, accessToken } from "./UserData";
+import { accessToken } from "./UserData";
 
-const uploadUrl = "https://www.googleapis.com/upload/drive/v3/files";
+const url = "https://www.googleapis.com/drive/v3";
+const uploadUrl = "https://www.googleapis.com/upload/drive/v3";
 
-const ddb = `--abcdef123456`;
+const boundaryString = "foo_bar_baz"; // can be anything unique, needed for multipart upload https://developers.google.com/drive/v3/web/multipart-upload
 
-console.log(`DEBUG accessToken`, accessToken);
-
-function _createHeaders(
-    contentType: string,
-    contentLength: number,
-    ...additionalPairs: any[]
-) {
-    let pairs = [["Authorization", `Bearer ${accessToken}`]];
-
-    [
-        ["Content-Type", contentType],
-        ["Content-Length", contentLength.toString()],
-    ].forEach((data) => (data[1] ? pairs.push(data) : undefined));
-
-    if (additionalPairs) {
-        pairs = pairs.concat(additionalPairs);
+async function parseAndHandleErrors(response: Response): Promise<any> {
+    console.log(`DEBUG parseAndHandleErrors`, response.ok);
+    if (response.ok) {
+        return response.json();
     }
-
-    const headers = new Headers();
-
-    for (let pair of pairs) {
-        headers.append(pair[0], pair[1]);
-    }
-
-    return headers;
+    console.log(`DEBUG err`, err);
+    const error = await response.json();
+    throw new Error(JSON.stringify(error));
 }
 
-const Files = {
-    async createFileMultipart(
-        media: string,
-        mediaType: string,
-        metadata: any
-    ): Promise<Response> {
-        const ending = `\n${ddb}--`;
+function configureGetOptions() {
+    const headers = new Headers();
+    headers.append("Authorization", `Bearer ${accessToken}`);
+    return {
+        method: "GET",
+        headers,
+    };
+}
 
-        let body =
-            `\n${ddb}\n` +
-            `Content-Type: application/json; charset=UTF-8\n\n` +
-            `${JSON.stringify(metadata)}\n\n${ddb}\n` +
-            `Content-Type: ${mediaType}\n\n`;
+function configurePostOptions(bodyLength: number, isUpdate = false) {
+    const headers = new Headers();
+    headers.append("Authorization", `Bearer ${accessToken}`);
+    headers.append(
+        "Content-Type",
+        `multipart/related; boundary=${boundaryString}`
+    );
+    headers.append("Content-Length", bodyLength.toString());
+    return {
+        method: isUpdate ? "PATCH" : "POST",
+        headers,
+    };
+}
 
-        body += `${media}${ending}`;
+function createMultipartBody(name: string, body: any, isUpdate = false) {
+    // https://developers.google.com/drive/v3/web/multipart-upload defines the structure
+    const metaData = {
+        name,
+        description: "React Bells song",
+        mimeType: "application/json",
+    } as any;
+    // if it already exists, specifying parents again throws an error
+    if (!isUpdate) metaData.parents = ["appDataFolder"];
 
-        console.log(`DEBUG body`, body);
+    // request body
+    const multipartBody =
+        `\r\n--${boundaryString}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n` +
+        `${JSON.stringify(metaData)}\r\n` +
+        `--${boundaryString}\r\nContent-Type: application/json\r\n\r\n` +
+        `${JSON.stringify(body)}\r\n` +
+        `--${boundaryString}--`;
 
-        console.log(`DEBUG params`, `${uploadUrl}?uploadType=multipart`, {
-            method: "POST",
-            headers: _createHeaders(
-                `multipart/related; boundary=${ddb}`,
-                body.length
-            ),
-        });
+    return multipartBody;
+}
 
-        return fetch(`${uploadUrl}?uploadType=multipart`, {
-            method: "POST",
-            headers: _createHeaders(
-                `multipart/related; boundary=${ddb}`,
-                body.length
-            ),
-            body,
-        });
-    },
-};
+// uploads a file with its contents and its meta data (name, description, type, location)
+async function uploadFile(
+    name: string,
+    content: any,
+    existingFileId?: string
+): Promise<any> {
+    const body = createMultipartBody(name, content, !!existingFileId);
+    const options = configurePostOptions(body.length, !!existingFileId);
+    return await parseAndHandleErrors(
+        await fetch(
+            `${uploadUrl}/files${
+                existingFileId ? `/${existingFileId}` : ""
+            }?uploadType=multipart`,
+            {
+                ...options,
+                body,
+            }
+        )
+    );
+}
+
+// Looks for files with the specified file name in your app Data folder only (appDataFolder is a magic keyword)
+function queryParams(name: string) {
+    return encodeURIComponent(
+        `name = '${name}' and 'appDataFolder' in parents`
+    );
+}
+
+// returns the files meta data only. the id can then be used to download the file
+async function getFile(name: string): Promise<any> {
+    const qParams = queryParams(name);
+    const options = configureGetOptions();
+    const body = await parseAndHandleErrors(
+        await fetch(`${url}/files?q=${qParams}&spaces=appDataFolder`, options)
+    );
+    if (body && body.files && body.files.length > 0) return body.files[0];
+    return null;
+}
+
+// download the file contents given the id
+async function downloadFile(existingFileId: string): Promise<any> {
+    const options = configureGetOptions();
+    if (!existingFileId) throw new Error("Didn't provide a valid file id.");
+    return await parseAndHandleErrors(
+        await fetch(`${url}/files/${existingFileId}?alt=media`, options)
+    );
+}
 
 export function initDB(): void {}
 
@@ -83,30 +122,17 @@ function assertInitialized(): void {
 
 setSongDB({
     async saveSong(title: string, song: NoteTime[]): Promise<void> {
-        try {
-            assertInitialized();
-            title = cleanTitle(title);
-            const response = await Files.createFileMultipart(
-                JSON.stringify(song, undefined, 2),
-                "application/json",
-                {
-                    parents: ["appDataFolder"],
-                    name: title,
-                }
-            );
-
-            if (!response.ok) {
-                throw new Error(response.statusText);
-            }
-        } catch (err) {
-            console.error(err);
-        }
+        assertInitialized();
+        title = cleanTitle(title);
+        uploadFile(title, song);
     },
 
     async loadSong(title: string): Promise<NoteTime[] | null> {
         assertInitialized();
         title = cleanTitle(title);
-        const drivedata = "{}"; //await downloadFile(metadata);
-        return JSON.parse(drivedata) as NoteTime[];
+        const existingFileId = await getFile(title);
+        console.log(`DEBUG existingFileId`, existingFileId);
+        const drivedata = await downloadFile(existingFileId.id);
+        return drivedata as NoteTime[];
     },
 });

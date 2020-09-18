@@ -324,6 +324,10 @@ export default function Bells(props: BellsProps) {
     };
 
     async function handleRecordButtonPress() {
+        const song = await getSongDB().loadSong("bells.json");
+        console.log(`DEBUG song`, song);
+        throw new Error("FIXME GJ ");
+
         let mySong: NoteTime[] = [];
         if (!isRecording) {
             /* start recording */

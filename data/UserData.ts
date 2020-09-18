@@ -28,7 +28,11 @@ export async function signInWithGoogle() {
     try {
         const result = await Google.logInAsync({
             androidClientId: ANDROID_CLIENT_ID,
-            scopes: ["profile", "email"],
+            scopes: [
+                "profile",
+                "email",
+                "https://www.googleapis.com/auth/drive.appdata",
+            ],
         });
 
         if (result.type === "success") {
