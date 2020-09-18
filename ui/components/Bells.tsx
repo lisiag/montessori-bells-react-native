@@ -324,14 +324,10 @@ export default function Bells(props: BellsProps) {
     };
 
     async function handleRecordButtonPress() {
-        const song = await getSongDB().loadSong("bells.json");
-        console.log(`DEBUG song`, song);
-        throw new Error("FIXME GJ ");
-
         let mySong: NoteTime[] = [];
         if (!isRecording) {
             /* start recording */
-            showToastWithGravity("Recording");
+            showToastWithGravity("Recording started");
             if (recording != null) recording();
             recording = recordSong();
         } else {
@@ -344,9 +340,14 @@ export default function Bells(props: BellsProps) {
         setIsRecording(!isRecording);
     }
 
+    async function handlePlaySongButtonPress() {
+        const song = await getSongDB().loadSong("bells.json");
+        console.log(`DEBUG song`, song);
+    }
+
     const matchToolbar = () => {
         return (
-            <View style={styles.matchToolbar}>
+            <View style={styles.toolbar}>
                 <Button
                     onPress={onPlayAgainPress}
                     title="Play again"
@@ -369,7 +370,7 @@ export default function Bells(props: BellsProps) {
     const makeMusicToolbar = () => {
         /* type is "makeMusic" */
         return (
-            <View style={styles.makeMusicToolbar}>
+            <View style={styles.toolbar}>
                 <Button
                     onPress={() => handleRecordButtonPress()}
                     title={isRecording ? "Stop" : "Record"}
@@ -378,6 +379,11 @@ export default function Bells(props: BellsProps) {
                 <Button
                     onPress={() => setModalVisible(true)}
                     title="Instructions"
+                    color="#000"
+                />
+                <Button
+                    onPress={() => handlePlaySongButtonPress()}
+                    title="Play song"
                     color="#000"
                 />
             </View>
@@ -418,14 +424,9 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
-    matchToolbar: {
+    toolbar: {
         flexDirection: "row",
         justifyContent: "space-between",
-        marginBottom: 5,
-    },
-    makeMusicToolbar: {
-        flexDirection: "row",
-        justifyContent: "space-around",
         marginBottom: 5,
     },
     button: {
