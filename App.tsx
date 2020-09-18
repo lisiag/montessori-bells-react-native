@@ -10,9 +10,9 @@ import HomeScreen from "./ui/screens/HomeScreen";
 import Login from "./ui/screens/Login";
 import MakeMusic from "./ui/screens/MakeMusic";
 import Match from "./ui/screens/Match";
-
 import { initDB } from "./data/SongData";
 
+/* initDB() doesn't currently do anything but initDB must be imported in this file */
 initDB();
 
 const Stack = createStackNavigator();

@@ -1,17 +1,18 @@
 import { setSongDB, NoteTime } from "../business/song";
 import { accessToken } from "./UserData";
 
+// Some of this file is based on information in the article "Google Drive in React Native" by
+// Christoph Michel: https://cmichel.io/google-drive-in-react-native
+
 const url = "https://www.googleapis.com/drive/v3";
 const uploadUrl = "https://www.googleapis.com/upload/drive/v3";
 
 const boundaryString = "foo_bar_baz"; // can be anything unique, needed for multipart upload https://developers.google.com/drive/v3/web/multipart-upload
 
 async function parseAndHandleErrors(response: Response): Promise<any> {
-    console.log(`DEBUG parseAndHandleErrors`, response.ok);
     if (response.ok) {
         return response.json();
     }
-    console.log(`DEBUG err`, err);
     const error = await response.json();
     throw new Error(JSON.stringify(error));
 }
@@ -39,6 +40,8 @@ function configurePostOptions(bodyLength: number, isUpdate = false) {
     };
 }
 
+// MultipartBody : used while breaking up the data in a POST request into different discrete types
+// and send to server. Multipartbody can be used for file requests.
 function createMultipartBody(name: string, body: any, isUpdate = false) {
     // https://developers.google.com/drive/v3/web/multipart-upload defines the structure
     const metaData = {
@@ -81,14 +84,15 @@ async function uploadFile(
     );
 }
 
-// Looks for files with the specified file name in your app Data folder only (appDataFolder is a magic keyword)
+// Looks for files with the specified file name in user's app Data folder only (appDataFolder is a
+// magic keyword understood by Google)
 function queryParams(name: string) {
     return encodeURIComponent(
         `name = '${name}' and 'appDataFolder' in parents`
     );
 }
 
-// returns the files meta data only. the id can then be used to download the file
+// returns the file's meta data only. the id can then be used to download the file
 async function getFile(name: string): Promise<any> {
     const qParams = queryParams(name);
     const options = configureGetOptions();
@@ -108,8 +112,13 @@ async function downloadFile(existingFileId: string): Promise<any> {
     );
 }
 
+// This file must be imported into App.tsx (this app's entry point) so that the songs database
+// (user's Google Drive appDataFolder) can be saved to and read from in the ui. The database does
+// not need to be initialized, so this function currently does nothing. It is called in App.tsx so
+// that the import is not mistaken as redundant and removed.
 export function initDB(): void {}
 
+// Remove chars that may be problematic in a filename
 function cleanTitle(title: string): string {
     return title.replace(/[^a-zA-Z0-9._-]+/g, "");
 }
@@ -120,6 +129,7 @@ function assertInitialized(): void {
     }
 }
 
+// set the songs database
 setSongDB({
     async saveSong(title: string, song: NoteTime[]): Promise<void> {
         assertInitialized();
@@ -131,7 +141,6 @@ setSongDB({
         assertInitialized();
         title = cleanTitle(title);
         const existingFileId = await getFile(title);
-        console.log(`DEBUG existingFileId`, existingFileId);
         const drivedata = await downloadFile(existingFileId.id);
         return drivedata as NoteTime[];
     },

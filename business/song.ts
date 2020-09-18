@@ -1,4 +1,4 @@
-// Business interface that can be called on by the UI and that in turn calls on the Firebase songs
+// Business interface that can be called on by the UI and that in turn calls on the songs
 // database, thus keeping the UI and songs data separated
 
 import { addNoteListener, removeNoteListener } from "./note";
@@ -15,6 +15,11 @@ export interface SongData {
     song: NoteTime[];
 }
 
+// SongCallback, songLoadListeners, addSongLoadListeners and notifySongLoadListeners are not
+// currently being used. In the Ionic version of this app, they were used for listening to changes
+// in the songs database. I am keeping them here as they may be useful here in the future, for
+// example when the saving and loading of songs is modified to allow the user to save more than one
+// song.
 type SongCallback = (song: SongData | null) => void;
 
 // listeners that are called when the 'songs' database changes, i.e. the logged in user's saved song changes
@@ -51,6 +56,7 @@ export interface SongDB {
 }
 export let songDB: SongDB | null = null;
 
+// set the songs database
 export function setSongDB(v: SongDB) {
     songDB = v;
 }
@@ -61,5 +67,3 @@ export function getSongDB(): SongDB {
     }
     return songDB;
 }
-
-// this needs to be wired to a concrete SongPersister (from the data layer)
