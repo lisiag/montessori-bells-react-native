@@ -11,6 +11,10 @@ import Login from "./ui/screens/Login";
 import MakeMusic from "./ui/screens/MakeMusic";
 import Match from "./ui/screens/Match";
 
+import { initDB } from "./data/SongData";
+
+initDB();
+
 const Stack = createStackNavigator();
 
 export default function App() {

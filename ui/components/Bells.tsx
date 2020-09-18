@@ -18,19 +18,8 @@ import { Icon } from "react-native-elements";
 import { Util } from "../../business/util";
 import { View, Text } from "../components/Themed";
 import { headerHeight } from "../constants/constants";
-import { notifyNoteListener, addNoteListener } from "../../business/note";
+import { notifyNoteListener } from "../../business/note";
 import { NoteTime, recordSong, getSongDB } from "../../business/song";
-
-// FIXME example mock code for recording song
-/*
-   startRecording.onclick(() => {
-   song = recordSong();
-   });
-
-   songTitleForm.onsubmit(async () => {
-   await songSaver.saveSong("myBellsSong", song);
-   })
-*/
 
 /* Use the screen width to work out the placement of the bells. In the future, if this app is
    deployed not just for mobile devices but also for web, this will need to be modified so that on a
@@ -329,6 +318,7 @@ export default function Bells(props: BellsProps) {
         try {
             await getSongDB().saveSong("bells.json", song);
         } catch (err) {
+            console.log(`DEBUG 1`);
             console.error(err);
         }
     };

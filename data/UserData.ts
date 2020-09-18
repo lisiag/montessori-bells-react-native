@@ -7,6 +7,23 @@ export let accessToken: any = null;
 const ANDROID_CLIENT_ID =
     "206489084146-42luprtdfm6mr734srruuq01jgm69dv6.apps.googleusercontent.com";
 
+type LoginCallback = (userName?: string, accessToken?: string) => void;
+
+let loginListener = new Set<LoginCallback>();
+
+export function observeLogin(callback: LoginCallback): () => void {
+    loginListener.add(callback);
+    return () => {
+        loginListener.delete(callback);
+    };
+}
+
+function notifyListeners(userName?: string, accessToken?: string) {
+    for (const cb of loginListener) {
+        cb(userName, accessToken);
+    }
+}
+
 export async function signInWithGoogle() {
     try {
         const result = await Google.logInAsync({
@@ -17,8 +34,10 @@ export async function signInWithGoogle() {
         if (result.type === "success") {
             userName = result.user.givenName;
             accessToken = result.accessToken;
+            notifyListeners(userName, accessToken);
             return true;
         } else {
+            notifyListeners();
             return false;
         }
     } catch (e) {
