@@ -7,6 +7,10 @@ export function addNoteListener(callback: NoteCallback) {
     listeners.add(callback);
 }
 
+export function removeNoteListener(callback: NoteCallback) {
+    listeners.delete(callback);
+}
+
 // If the 'songs' database is modified then anywhere in app that uses the data (i.e. play_songs
 // page when it calls getSong) needs to be notified
 export function notifyNoteListener(note: number) {

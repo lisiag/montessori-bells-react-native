@@ -1,7 +1,7 @@
 // Business interface that can be called on by the UI and that in turn calls on the Firebase songs
 // database, thus keeping the UI and songs data separated
 
-import { addNoteListener } from "./note";
+import { addNoteListener, removeNoteListener } from "./note";
 
 // units of song
 export interface NoteTime {
@@ -33,12 +33,16 @@ export function notifySongLoadListeners(currentSong: SongData) {
     }
 }
 
-export function recordSong(): NoteTime[] {
+export function recordSong(): () => NoteTime[] {
     const song: NoteTime[] = [];
-    addNoteListener((note: number) => {
+    const callback = (note: number) => {
         song.push({ note, time: Date.now() });
-    });
-    return song;
+    };
+    addNoteListener(callback);
+    return () => {
+        removeNoteListener(callback);
+        return song;
+    };
 }
 
 export interface SongPersister {

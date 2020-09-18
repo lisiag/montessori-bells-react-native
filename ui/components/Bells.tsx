@@ -18,8 +18,8 @@ import { Icon } from "react-native-elements";
 import { Util } from "../../business/util";
 import { View, Text } from "../components/Themed";
 import { headerHeight } from "../constants/constants";
-import { notifyNoteListener } from "../../business/note";
-import { NoteTime } from "../../business/song";
+import { notifyNoteListener, addNoteListener } from "../../business/note";
+import { NoteTime, recordSong } from "../../business/song";
 
 // FIXME example mock code for recording song
 /*
@@ -70,9 +70,13 @@ const answerColors = [
 ];
 
 /* Each time the activity is played, some sound files from 'mp3s' are randomly selected (or all are
-selected in activities where the whole octave is used). The index of each selected 'mp3s' element is
-stored in the 'notes' array */
+   selected in activities where the whole octave is used). The index of each selected 'mp3s' element is
+   stored in the 'notes' array */
 let notes: number[] = [];
+
+/* set up for recording the user's song in 'Make music' activity */
+let song: NoteTime[] = [];
+let recording: () => NoteTime[];
 
 export interface BellsProps {
     type: string /* Are these bells wanted for a matching activity, sorting activity or making music activity? */;
@@ -140,8 +144,17 @@ export default function Bells(props: BellsProps) {
         rowIndices.push(i);
     }
 
-    /* set up for recording the user's song in 'Make music' activity */
-    let song: NoteTime[] = [];
+    async function playSound(note: number) {
+        const mp3 = mp3s[note];
+        try {
+            notifyNoteListener(note);
+            await Audio.Sound.createAsync(mp3, {
+                shouldPlay: true,
+            });
+        } catch (error) {
+            console.error(error);
+        }
+    }
 
     /* Render a fixed bell - a bell that can't be dragged */
     const renderFixed = (rowIdx: number) => {
@@ -179,18 +192,6 @@ export default function Bells(props: BellsProps) {
             return renderFixed(rowIdx);
         });
     };
-
-    async function playSound(note: number) {
-        const mp3 = mp3s[note];
-        try {
-            notifyNoteListener(note);
-            await Audio.Sound.createAsync(mp3, {
-                shouldPlay: true,
-            });
-        } catch (error) {
-            console.error(error);
-        }
-    }
 
     /* Render a draggable bell - a bell that can be dragged */
     const renderDraggable = (rowIdx: number) => {
@@ -324,20 +325,26 @@ export default function Bells(props: BellsProps) {
         );
     };
 
-    const record = () => {};
+    const saveSong = (song: NoteTime[]) => {
+        song.forEach((notetime) => {
+            console.log(notetime.note);
+            console.log(notetime.time);
+        });
+    };
 
     async function handleRecordButtonPress() {
+        let mySong: NoteTime[] = [];
         if (!isRecording) {
             /* start recording */
-            /* record song */
-            record();
             showToastWithGravity("Recording");
+            if (recording != null) recording();
+            recording = recordSong();
         } else {
             /* Stop recording */
             showToastWithGravity("Recording finished");
+            mySong = recording!();
             /* Save recording */
-            /* Clear recording ready for user's next song */
-            song = [];
+            saveSong(mySong);
         }
         setIsRecording(!isRecording);
     }
