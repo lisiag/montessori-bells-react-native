@@ -45,10 +45,21 @@ export function recordSong(): () => NoteTime[] {
     };
 }
 
-export interface SongPersister {
-    saveSong: (title: string, song: NoteTime[]) => Promise<void>;
-    loadSong: (title: string) => Promise<NoteTime[]>;
+export interface SongDB {
+    saveSong(title: string, song: NoteTime[]): Promise<void>;
+    loadSong(title: string): Promise<NoteTime[] | null>;
+}
+export let songDB: SongDB | null = null;
+
+export function setSongDB(v: SongDB) {
+    songDB = v;
+}
+
+export function getSongDB(): SongDB {
+    if (songDB == null) {
+        throw new Error("songDB not configured!");
+    }
+    return songDB;
 }
 
 // this needs to be wired to a concrete SongPersister (from the data layer)
-export let songSaver: SongPersister | null = null;

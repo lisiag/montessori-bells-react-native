@@ -19,7 +19,7 @@ import { Util } from "../../business/util";
 import { View, Text } from "../components/Themed";
 import { headerHeight } from "../constants/constants";
 import { notifyNoteListener, addNoteListener } from "../../business/note";
-import { NoteTime, recordSong } from "../../business/song";
+import { NoteTime, recordSong, getSongDB } from "../../business/song";
 
 // FIXME example mock code for recording song
 /*
@@ -325,11 +325,12 @@ export default function Bells(props: BellsProps) {
         );
     };
 
-    const saveSong = (song: NoteTime[]) => {
-        song.forEach((notetime) => {
-            console.log(notetime.note);
-            console.log(notetime.time);
-        });
+    const saveSong = async (song: NoteTime[]) => {
+        try {
+            await getSongDB().saveSong("bells.json", song);
+        } catch (err) {
+            console.error(err);
+        }
     };
 
     async function handleRecordButtonPress() {

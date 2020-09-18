@@ -2,7 +2,7 @@ import * as Google from "expo-google-app-auth";
 
 export let userName: string | undefined = undefined;
 
-let accessToken: any = null;
+export let accessToken: any = null;
 
 const ANDROID_CLIENT_ID =
     "206489084146-42luprtdfm6mr734srruuq01jgm69dv6.apps.googleusercontent.com";
