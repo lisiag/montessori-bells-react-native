@@ -347,14 +347,47 @@ export default function Bells(props: BellsProps) {
         setIsRecording(!isRecording);
     }
 
+    /* Play the current logged in user's song. In the future a user will be able to record and save and
+       play more than one song. If user is not logged in, this is not called. NoteTime is the format in
+       which the parts of a song are stored (start time and note) */
+    const playSong = async (song: NoteTime[]) => {
+        try {
+            let start = song[0].time;
+            for (let i = 0; i < song.length; ++i) {
+                const noteTime = song[i];
+                const wait = noteTime.time - start;
+                /* to wait using setTimeout in an async function: */
+                /* https://codingwithspike.wordpress.com/2018/03/10/making-settimeout-an-async-await-function/ */
+                await new Promise((resolve) => {
+                    setTimeout(resolve, wait);
+                });
+                playSound(noteTime.note);
+                start = noteTime.time;
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
     async function handlePlaySongButtonPress() {
         const userName = getUserName();
         if (userName === undefined) {
             Alert.alert("To record songs, please log in.");
             return;
         }
+        ToastAndroid.showWithGravity(
+            "Searching for your song",
+            ToastAndroid.SHORT,
+            ToastAndroid.TOP
+        );
         const song = await getSongDB().loadSong("bells.json");
-        console.log(`DEBUG song`, song);
+        if (song === null) {
+            Alert.alert(
+                'You don\'t have a saved song yet. To save a song, press "Record", then tap the bells to make music, and then press "Stop" to stop recording.'
+            );
+            return;
+        }
+        playSong(song);
     }
 
     const matchToolbar = () => {

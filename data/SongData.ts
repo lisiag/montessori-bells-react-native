@@ -141,6 +141,8 @@ setSongDB({
         assertInitialized();
         title = cleanTitle(title);
         const existingFileId = await getFile(title);
+        // if the user doesn't have a saved song of that title, return null
+        if (existingFileId === null) return null;
         const drivedata = await downloadFile(existingFileId.id);
         return drivedata as NoteTime[];
     },
