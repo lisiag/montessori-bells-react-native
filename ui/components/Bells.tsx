@@ -13,6 +13,7 @@ import {
     Button,
     Modal,
     ToastAndroid,
+    Alert,
 } from "react-native";
 import { Icon } from "react-native-elements";
 import { Util } from "../../business/util";
@@ -20,6 +21,7 @@ import { View, Text } from "../components/Themed";
 import { headerHeight } from "../constants/constants";
 import { notifyNoteListener } from "../../business/note";
 import { NoteTime, recordSong, getSongDB } from "../../business/song";
+import { getUserName } from "../../business/UserBus";
 
 /* Use the screen width to work out the placement of the bells. In the future, if this app is
    deployed not just for mobile devices but also for web, this will need to be modified so that on a
@@ -324,6 +326,11 @@ export default function Bells(props: BellsProps) {
     };
 
     async function handleRecordButtonPress() {
+        const userName = getUserName();
+        if (userName === undefined) {
+            Alert.alert("To record songs, please log in.");
+            return;
+        }
         let mySong: NoteTime[] = [];
         if (!isRecording) {
             /* start recording */
@@ -341,6 +348,11 @@ export default function Bells(props: BellsProps) {
     }
 
     async function handlePlaySongButtonPress() {
+        const userName = getUserName();
+        if (userName === undefined) {
+            Alert.alert("To record songs, please log in.");
+            return;
+        }
         const song = await getSongDB().loadSong("bells.json");
         console.log(`DEBUG song`, song);
     }
