@@ -364,6 +364,7 @@ export default function Bells(props: BellsProps) {
         const song = await getSongDB().loadSong("bells.json");
         if (song === null) {
             Alert.alert(
+                "No saved song",
                 'You don\'t have a saved song yet. To save a song, press "Record", then tap the bells to make music, and then press "Stop" to stop recording.'
             );
             return;
