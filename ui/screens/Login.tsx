@@ -3,6 +3,11 @@ import { View, StyleSheet, Button, ToastAndroid } from "react-native";
 import { signIn, getUserName } from "../../business/UserBus";
 
 async function handlePress(navigation: any) {
+    ToastAndroid.showWithGravity(
+        "Connecting to Google",
+        ToastAndroid.LONG,
+        ToastAndroid.TOP
+    );
     const signedIn = await signIn();
     if (signedIn) {
         let welcomeMsg = "Haere mai, " + getUserName();
