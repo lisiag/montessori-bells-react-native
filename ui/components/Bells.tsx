@@ -17,7 +17,7 @@ import {
 } from "react-native";
 import { Icon } from "react-native-elements";
 import { Util } from "../../business/util";
-import { View, Text } from "../components/Themed";
+import { View } from "../components/Themed";
 import { headerHeight } from "../constants/constants";
 import { notifyNoteListener } from "../../business/note";
 import { NoteTime, recordSong, getSongDB } from "../../business/song";
@@ -74,6 +74,7 @@ export interface BellsProps {
     numPairs: number /* the number of pairs of bells for user to match; i.e. the number of bells in the lefthand col */;
     numRows: number /* the number of rows of bells; the number of bells in the righthand column */;
     title: string;
+    instructions: any;
 }
 
 /* Lay out the bells and other components required for the bells activities */
@@ -264,26 +265,6 @@ export default function Bells(props: BellsProps) {
         });
     };
 
-    /* The instructions that are displayed in a modal when the user presses the 'instructions'
-       button */
-    const instructions = () => {
-        let sing_plural: string;
-        if (props.numPairs === 1) {
-            sing_plural = "Tap each bell to play its note. Drag the ";
-        } else {
-            sing_plural = "Tap each bell to play its note. Drag each ";
-        }
-        return (
-            <Text style={{ padding: 20 }}>
-                <Text>{sing_plural!}</Text>
-                <Text style={{ color: "limegreen" }}>green</Text>
-                <Text> bell and drop it next to the </Text>
-                <Text style={{ color: "dodgerblue" }}>blue</Text>
-                <Text> bell that plays the same note.</Text>
-            </Text>
-        );
-    };
-
     const onModalClose = () => {
         setAnswersShowing(false);
         setModalVisible(false);
@@ -292,7 +273,7 @@ export default function Bells(props: BellsProps) {
     const instructionsModal = () => {
         return (
             <Modal visible={modalVisible}>
-                {instructions()}
+                {props.instructions}
                 <View style={styles.button}>
                     <Button onPress={onModalClose} title="Close" color="#000" />
                 </View>
