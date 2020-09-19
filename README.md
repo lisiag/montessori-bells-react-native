@@ -14,8 +14,9 @@ on a Xiaomi Mi A2 Android One phone running Android 10. To use the app at the cu
    npm install --global expo-cli
    ```
 1. Download the React Bells project source code.
-1. In a terminal, change to the project directory and enter the command:
+1. In a terminal, change to the project directory and enter the commands:
    ```bash
+   npm ic
    expo start
    ```
    A large QR code will be displayed in the terminal.
