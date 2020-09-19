@@ -8,17 +8,6 @@ export default function HomeScreen({ navigation }: any) {
             <ScrollView style={styles.scroll}>
                 <Text
                     style={styles.item}
-                    onPress={() => navigation.navigate("About")}
-                >
-                    About
-                </Text>
-                <View
-                    style={styles.separator}
-                    lightColor="#eee"
-                    darkColor="rgba(255,255,255,0.1)"
-                />
-                <Text
-                    style={styles.item}
                     onPress={() => navigation.navigate("Match", { level: 1 })}
                 >
                     Match bell
@@ -61,14 +50,19 @@ export default function HomeScreen({ navigation }: any) {
                     lightColor="#eee"
                     darkColor="rgba(255,255,255,0.1)"
                 />
-                <Text style={styles.item}>Play song</Text>
+                <Text style={[styles.item, styles.coming]}>
+                    Sort bells (coming soon!)
+                </Text>
                 <View
                     style={styles.separator}
                     lightColor="#eee"
                     darkColor="rgba(255,255,255,0.1)"
                 />
-                <Text style={[styles.item, styles.coming]}>
-                    Sort bells (coming soon!)
+                <Text
+                    style={styles.item}
+                    onPress={() => navigation.navigate("About")}
+                >
+                    About
                 </Text>
             </ScrollView>
         </SafeAreaView>
