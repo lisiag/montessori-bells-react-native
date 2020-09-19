@@ -18,9 +18,9 @@ on a Xiaomi Mi A2 Android One phone running Android 10. To use the app at the cu
    ```bash
    expo start
    ```
-   That will open a page in the web browser.
+   A large QR code will be displayed in the terminal.
 1. On an Android device, install and open the Expo app.
-1. In the Expo app, scan the QR code on the webpage that was opened by the "expo start" command.
+1. In the Expo app, scan the QR code displayed in the terminal.
 
 
 ## License
