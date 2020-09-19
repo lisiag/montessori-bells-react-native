@@ -23,7 +23,9 @@ export default function MakeMusic() {
                 {"\n\n"}To hear your saved song, press{" "}
             </Text>
             <Text style={styles.emph}>Play song</Text>
-            <Text>.</Text>
+            <Text>
+                .{"\n\n"}You must be logged in to record and play back songs.
+            </Text>
         </Text>
     );
 
