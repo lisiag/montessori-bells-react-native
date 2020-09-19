@@ -319,10 +319,15 @@ export default function Bells(props: BellsProps) {
             recording = recordSong();
         } else {
             /* Stop recording */
-            showToastWithGravity("Recording finished");
             mySong = recording!();
-            /* Save recording */
-            saveSong(mySong);
+            if (mySong.length > 0) {
+                /* Save recording */
+                showToastWithGravity("Saving song");
+                saveSong(mySong);
+                showToastWithGravity("Song saved");
+            } else {
+                Alert.alert("No notes were played. No song saved.");
+            }
         }
         setIsRecording(!isRecording);
     }
