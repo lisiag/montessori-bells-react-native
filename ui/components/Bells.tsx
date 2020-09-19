@@ -301,7 +301,6 @@ export default function Bells(props: BellsProps) {
         try {
             await getSongDB().saveSong("bells.json", song);
         } catch (err) {
-            console.log(`DEBUG 1`);
             console.error(err);
         }
     };
@@ -353,7 +352,7 @@ export default function Bells(props: BellsProps) {
     async function handlePlaySongButtonPress() {
         const userName = getUserName();
         if (userName === undefined) {
-            Alert.alert("To record songs, please log in.");
+            Alert.alert("To play songs, please log in.");
             return;
         }
         ToastAndroid.showWithGravity(
