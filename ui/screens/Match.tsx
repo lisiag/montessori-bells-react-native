@@ -4,7 +4,7 @@ import Bells from "../components/Bells";
 
 export default function Match({ route }: any) {
     const { level } = route.params;
-    const title = "Pair the matching bells";
+    const title = "Pair bells";
     let numRows: number;
 
     switch (level) {

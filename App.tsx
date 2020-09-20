@@ -47,7 +47,7 @@ export default function App() {
                 >
                     {stackScreen("Home", HomeScreen)}
                     {stackScreen("About", AboutScreen)}
-                    {stackScreen("Match", Match, "Pair the matching bells")}
+                    {stackScreen("Match", Match, "Pair bells")}
                     {stackScreen("MakeMusic", MakeMusic, "Make music")}
                     <Stack.Screen
                         name="Login"

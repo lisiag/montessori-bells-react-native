@@ -27,10 +27,15 @@ export default function createHeaderRight() {
 
         if (userName != null) {
             setPickerVal(userName);
+            /* display as much of the user's name as poss without overlapping the page title */
+            let pickerWidth = Math.min(160, userName.length * 13 + 60);
             return (
                 <Picker
                     selectedValue={pickerVal}
-                    style={{ height: 50, width: 100 }}
+                    style={{
+                        height: 50,
+                        width: pickerWidth,
+                    }}
                     onValueChange={(itemValue) => {
                         handleLogout(itemValue);
                     }}
