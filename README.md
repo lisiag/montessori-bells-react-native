@@ -1,4 +1,4 @@
-# React Bells
+# Montessori Bells with React Native
 
 React Bells is a mobile app of activities based on the Montessori bells, for children ages 3-9
 years to use under adult supervision.
